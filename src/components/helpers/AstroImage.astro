@@ -57,7 +57,7 @@ const normalizeSrcPath = (path: string | undefined): string => {
 
 // Glob pattern to load images
 const images = import.meta.glob<{ default: ImageMetadata }>(
-  '/src/assets/**/*.{jpeg,jpg,png,gif,svg}'
+  '/src/assets/**/*.{jpeg,jpg,png,gif,svg,webp}'
 );
 
 const normalizedSrc = normalizeSrcPath(src);
