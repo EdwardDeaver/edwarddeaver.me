@@ -1,63 +1,51 @@
-import { defineCollection, z } from "astro:content";
+import { glob } from 'astro/loaders';
+import { defineCollection, z } from 'astro:content';
 
-function removeDupsAndLowerCase(array: string[]) {
-	if (!array.length) return array;
-	const lowercaseItems = array.map((str) => str.toLowerCase());
-	const distinctItems = new Set(lowercaseItems);
-	return Array.from(distinctItems);
+const blogCollection = defineCollection({
+  type: 'content',
+  schema: z.object({
+    draft: z.boolean().optional(),
+    featured: z.boolean().optional(),
+    title: z.string(),
+    description: z.string(),
+    image: z.string().optional(),
+    date: z.date(),
+    author: z.string(),
+    categories: z.array(z.string()),
+    tags: z.array(z.string()),
+  }),
+});
+const portfolioCollection = defineCollection({
+  type: 'content',
+  schema: z.object({
+    draft: z.boolean().optional(),
+    featured: z.boolean().optional(),
+    title: z.string(),
+    description: z.string(),
+    image: z.string().optional(),
+    date: z.date(),
+    author: z.string(),
+    categories: z.array(z.string()),
+    tags: z.array(z.string()),
+  }),
+});
+const authorCollection = defineCollection({
+  type: 'content',
+  schema: z.object({
+    title: z.string(),
+    subtitle: z.string(),
+    image: z.string().optional(),
+  }),
+});
+
+// Pages collection schema
+const pagesCollection = defineCollection({
+  loader: glob({ pattern: '**/*.mdx', base: './src/content/pages' }),
+});
+
+export const collections = {
+  blog: blogCollection,
+  author: authorCollection,
+  pages: pagesCollection,
+  portfolio: portfolioCollection,
 }
-
-const post = defineCollection({
-	schema: ({ image }) =>
-		z.object({
-			coverImage: z
-				.object({
-					alt: z.string(),
-					src: image(),
-				})
-				.optional(),
-			description: z.string().min(50).max(160),
-			draft: z.boolean().default(false),
-			ogImage: z.string().optional(),
-			publishDate: z
-				.string()
-				.or(z.date())
-				.transform((val) => new Date(val)),
-			tags: z.array(z.string()).default([]).transform(removeDupsAndLowerCase),
-			title: z.string().max(60),
-			updatedDate: z
-				.string()
-				.optional()
-				.transform((str) => (str ? new Date(str) : undefined)),
-		}),
-	type: "content",
-});
-
-
-const projects = defineCollection({
-	schema: ({ image }) =>
-		z.object({
-			coverImage: z
-				.object({
-					alt: z.string(),
-					src: image(),
-				})
-				.optional(),
-			description: z.string().min(50).max(160),
-			draft: z.boolean().default(false),
-			ogImage: z.string().optional(),
-			publishDate: z
-				.string()
-				.or(z.date())
-				.transform((val) => new Date(val)),
-			tags: z.array(z.string()).default([]).transform(removeDupsAndLowerCase),
-			title: z.string().max(60),
-			updatedDate: z
-				.string()
-				.optional()
-				.transform((str) => (str ? new Date(str) : undefined)),
-		}),
-	type: "content",
-});
-
-export const collections = { post, projects };

@@ -1,0 +1,71 @@
+body {
+  @apply text-gray dark:text-gray-dark bg-body dark:bg-body-dark text-[15px] md:text-base leading-[1.65] font-secondary;
+}
+p {
+  @apply leading-[1.8];
+}
+::selection {
+  @apply text-white bg-primary dark:bg-primary-dark shadow-none;
+}
+:focus {
+  @apply outline-none;
+}
+
+
+// default styles
+.section {
+  @apply py-20 md:py-28;
+  &-sm {
+    @apply py-14 sm:py-20 lg:py-24;
+  }
+}
+.section-title {
+  @apply relative mb-[55px] md:mb-[80px] text-[1.8rem] md:text-[2.05rem] lg:text-[2.3rem];
+  span {
+    @apply capitalize px-3 bg-bottom bg-no-repeat bg-[length:180px] md:bg-[length:260px];
+    background-image: url("data:image/svg+xml,%3Csvg width='298' height='32' viewBox='0 0 298 32' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 17.1944C62.6418 7.28318 174.478 -8.49028 296 27' stroke='%23ffd5c7' stroke-width='9'/%3E%3C/svg%3E%0A");
+
+		&:is(.dark *) {
+			background-image: url("data:image/svg+xml,%3Csvg width='298' height='32' viewBox='0 0 298 32' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 17.1944C62.6418 7.28318 174.478 -8.49028 296 27' stroke='%231a664b' stroke-width='9'/%3E%3C/svg%3E%0A");
+		}
+  }
+}
+
+// button style
+.btn {
+  @apply py-3 md:py-3 px-5 md:px-6 text-white text-[15px] md:text-base rounded-md transition-all duration-200 relative z-10 overflow-hidden inline-flex items-center gap-2 font-medium;
+	&:hover {
+		box-shadow: 0px 10px 25px rgba(black, 0.1);
+	}
+	&.btn-sm {
+    @apply py-[10px] px-[18px];
+	}
+	&.btn-lg {
+    @apply py-3 xl:py-[14px] px-7 xl:px-[34px];
+	}
+	&.btn-primary {
+    @apply bg-primary dark:bg-primary-dark border border-primary dark:border-primary-dark;
+		&:hover,
+		&:active,
+		&:focus {
+      @apply bg-dark text-white dark:bg-[#363f52] border-dark dark:border-[#363f52];
+		}
+	}
+	&.btn-outline-primary {
+		@apply border border-gray/30 dark:border-[#3c4352] text-dark dark:text-white;
+		&:hover,
+		&:active,
+		&:focus {
+			@apply bg-primary dark:bg-primary-dark text-white border-primary dark:border-primary-dark;
+		}
+	}
+}
+
+// footer
+footer {
+	@apply bg-body dark:bg-body-dark;
+	background: linear-gradient(180deg, #fff6ef 0%, #ffffff 55%);
+	&:is(.dark *) {
+		background: linear-gradient(180deg, #131926 0%, #121622 55%);
+	}
+}

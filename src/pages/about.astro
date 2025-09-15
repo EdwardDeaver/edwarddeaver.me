@@ -1,47 +1,118 @@
 ---
-import { Image } from "astro:assets";
-import aboutImg from "@/assets/about-astro.png";
-import PageLayout from "@/layouts/Base.astro";
+import { generateParagraph } from "@src/utils/generateParagraph";
+import { markdownify, slugify } from "@src/utils/textConverter";
 
-const meta = {
-	description: "I'm a starter theme for Astro.build",
-	title: "About",
-};
+import AstroImage from "@components/helpers/AstroImage.astro";
+import PageHeader from "@components/PageHeader.astro";
+import Layout from '@layouts/Layout.astro';
+
+import type { CollectionEntry } from "astro:content";
+import { getCollection, getEntry } from 'astro:content';
+const aboutPage = await getEntry("pages", "about");
+
+if (!aboutPage || aboutPage?.data.draft) {
+  const res = new Response(null, { status: 404, });
+  res.headers.append("content-type", "text/html")
+  return res;
+}
+
+const { title, metadata, intro, our_writers } : any = aboutPage?.data;
+
+const allPosts: CollectionEntry<"blog">[] = await getCollection("blog");
+const allAuthors: CollectionEntry<"author">[] = await getCollection("author");
+
+// count the number of posts written by each author
+const authorCounts: Record<string, number> = allAuthors.reduce((counts, author) => {
+  const count = allPosts.filter((post) => post.data.author === author.data.title).length;
+  return { ...counts, [author.data.title]: count > 0 ? (count > 9 ? count : "0" + count) : 0 };
+}, {});
+
+// sort author by number of posts
+const sortedAuthors = allAuthors.sort((a, b) => authorCounts[b.data.title] - authorCounts[a.data.title]);
+
+const introContent = await markdownify(intro.description ?? "");
 ---
 
-<PageLayout meta={meta}>
-	<div class="space-y-6">
-		<h1 class="title">About</h1>
-		<p>
-			Hi, I’m a starter Astro. I’m particularly great for getting you started with your own blogging
-			website.
-		</p>
-		<div class="flex justify-center">
-			<Image
-				alt="A cartoon cactus looking at the 'Astro.build' logo"
-				fetchpriority="high"
-				loading="eager"
-				src={aboutImg}
-			/>
-		</div>
-		<p>Here are my some of my awesome built in features:</p>
-		<ul class="list-inside list-disc">
-			<li>I'm ultra fast as I'm a static site</li>
-			<li>I'm fully responsive</li>
-			<li>I come with a light and dark mode</li>
-			<li>I'm easy to customise and add additional content</li>
-			<li>I have Tailwind CSS styling</li>
-			<li>Shiki code syntax highlighting</li>
-			<li>Satori for auto generating OG images for blog posts</li>
-		</ul>
-		<p>
-			Clone or fork my <a
-				aria-label="github repository"
-				class="cactus-link inline-block"
-				href="https://github.com/chrismwilliams/astro-cactus"
-				rel="noreferrer"
-				target="_blank">repo</a
-			> if you like me!
-		</p>
-	</div>
-</PageLayout>
+<Layout
+  title={title}
+  meta_title={metadata.title}
+  description={metadata.description} 
+  image={metadata.image} 
+  author={metadata.author} 
+  keywords={metadata.keywords} 
+  noindex={metadata.noindex} 
+  canonical={metadata.canonical}
+>
+  <PageHeader title={title} />
+
+	<section>
+    <div class="container -mt-2">
+      <div class="row justify-center mb-12">
+        <div class="lg:col-10 text-center">
+          <h2 class="text-dark" set:html={intro.title ?? ""} />
+          <div class="content mt-6" set:html={generateParagraph(introContent)} />
+        </div>
+      </div>
+
+      <div class="row gy-2 sm:gy-3 g-2 sm:g-3 lg:g-4 justify-center text-center">
+        {intro.images.map((item: {src: string; width: number; height: number; grid_class: string}, index: number) => (
+          <div
+            class={`
+              ${item.grid_class} 
+              image-grid-${index + 1} 
+              [&:nth-child(2)_img]:md:mt-12
+              [&:nth-child(3)_img]:md:mt-3
+            `}>
+            <AstroImage
+              class="max-w-full rounded-lg mt-0"
+              src={item.src}
+              alt="about image"
+              width={item.width}
+              height={item.height}
+            />
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  {our_writers.enable && (
+    <section class="section-sm pb-0">
+      <div class="container">
+        <h2 class="section-title text-center">
+          <span>{our_writers.title}</span>
+        </h2>
+
+        <div class="row gy-5 row-cols-2 sm:row-cols-3 lg:row-cols-4 justify-center">
+          {sortedAuthors.slice(0, 3).map((author) => (
+            <a class="inline-block group text-center" href={"/author/" + slugify(author.slug)}>
+              <AstroImage
+                class="max-w-full transition-all duration-300 group-hover:opacity-75 h-20 sm:h-24 md:h-32 w-20 sm:w-24 md:w-32 rounded-clip mx-auto bg-white"
+                src={author.data.image}
+                alt={author.data.title}
+                width={112}
+                height={112}
+              />
+              
+              <h4 class="text-dark mt-4 sm:mt-5 mb-1">{author.data.title}</h4>
+              <p class="font-medium mb-2 text-[#505050] dark:text-gray-dark">{author.data.subtitle}</p>
+              <p class="text-sm mb-0 leading-tight"><span class="font-semibold">{authorCounts[author.data.title]}</span> Published posts</p>
+            </a>
+          ))}
+            <a class="inline-block group text-center" href="/author">
+              <div class="max-w-full h-20 sm:h-24 md:h-32 w-20 sm:w-24 md:w-32 rounded-clip mx-auto bg-white dark:bg-dark-dark grid place-content-center">
+                <svg class="transition-opacity duration-300 group-hover:opacity-50 h-10 sm:h-16 w-10 sm:w-16" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1" color="currentColor"><path d="M2.5 12c0-4.478 0-6.718 1.391-8.109S7.521 2.5 12 2.5c4.478 0 6.718 0 8.109 1.391S21.5 7.521 21.5 12c0 4.478 0 6.718-1.391 8.109S16.479 21.5 12 21.5c-4.478 0-6.718 0-8.109-1.391S2.5 16.479 2.5 12"/><path d="M7.5 17c2.332-2.442 6.643-2.557 9 0m-2.005-7.5c0 1.38-1.12 2.5-2.503 2.5a2.5 2.5 0 0 1-2.504-2.5c0-1.38 1.12-2.5 2.504-2.5a2.5 2.5 0 0 1 2.503 2.5"/></g></svg>
+              </div>
+              
+              <div class="bg-gradient-to-r to-body dark:to-body-dark via-white dark:via-dark-dark from-body dark:from-body-dark w-40 h-6 sm:h-7 mt-4 sm:mt-5 mb-3 mx-auto"></div>
+              <div class="bg-gradient-to-r to-body dark:to-body-dark via-white dark:via-dark-dark from-body dark:from-body-dark w-40 h-4 mb-4 mx-auto"></div>
+              <p class="text-sm flex gap-x-2 justify-center items-center mb-0 leading-tight transition-opacity duration-300 group-hover:opacity-50">
+                View all <span class="hidden sm:inline">Authors</span>
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" color="currentColor"><path d="M2.5 12c0-4.478 0-6.718 1.391-8.109S7.521 2.5 12 2.5c4.478 0 6.718 0 8.109 1.391S21.5 7.521 21.5 12c0 4.478 0 6.718-1.391 8.109S16.479 21.5 12 21.5c-4.478 0-6.718 0-8.109-1.391S2.5 16.479 2.5 12"/><path d="M10 7s4 3.682 4 5s-4 5-4 5"/></g></svg>
+              </p>
+            </a>
+        </div>
+      </div>
+    </section>
+  )}
+</Layout>

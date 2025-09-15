@@ -1,0 +1,209 @@
+---
+draft: false
+featured: false
+title: "Elements of Qurno Blog Theme"
+description: "Lithium-ion batteries have played a vital role in the development of electric vehicles and we love them for that. But at the same time, lithium is expensive to produce, unstable in high temperatures, and a finite resource whose mining often comes with supply chain problems."
+image: "/assets/blog/elements.jpg"
+date: 2015-01-10T16:56:47+06:00
+author: "Edward Deaver"
+categories: ["Elements"]
+tags: ["Astrojs", "Image", "Gallery", "Video", "Syntax Highlighting"]
+---
+
+### Elements
+
+This page demonstrate some basic elements and typography which you will use frequently within your site. Make the text **bold** or make it *italic*. Why not **_bold and italic_** both at a time. Here is the link to [Astro.js](https://astro.build/) website. Do you want to link a long text [here how it looks in this theme](https://astro.build/).
+
+URLs will automatically get turned into links. https://astro.build/.
+
+## Heading two
+### Heading three
+#### Heading four
+##### Heading five
+###### Heading six
+
+### Paragraph
+
+Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.
+
+It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.
+
+<hr/>
+
+### Ordered List
+
+1. The leap into electronic typesetting
+1. It was popularised in the 1960s
+    1. Recently with desktop publishing software
+    1. An unknown printer took a galley
+        1. Recently with desktop publishing software
+        1. An unknown printer took a galley
+1. It has survived not only five centuries
+1. The final item
+
+<hr/>
+
+### Unordered List
+
+* The leap into electronic typesetting
+* It was popularised in the 1960s
+    * Recently with desktop publishing software
+    * An unknown printer took a galley
+        * Recently with desktop publishing software
+        * An unknown printer took a galley
+* It has survived not only five centuries
+* The final item
+
+<hr/>
+
+### Syntax Highlighting
+
+```css title="style.scss"
+/* form autofill style reset */
+input:-webkit-autofill,
+input:-webkit-autofill:hover, 
+input:-webkit-autofill:focus,
+textarea:-webkit-autofill,
+textarea:-webkit-autofill:hover,
+textarea:-webkit-autofill:focus {
+  -webkit-text-fill-color: #000;
+  -webkit-box-shadow: 0 0 0px 1000px #fff inset;
+}
+```
+
+```javascript title="[...slug].astro"
+export async function getStaticPaths() {
+  const posts: CollectionEntry<"blog">[] = await getCollection("blog");
+  const authors: CollectionEntry<"author">[] = await getCollection("author");
+
+  return posts.map((post) => {
+    const currentAuthor = authors.find((author) => author.data.title === post.data.author);
+    return {
+      params: { slug: post.slug },
+      props: { post, currentAuthor },
+    };
+  });
+}
+```
+
+```typescript
+interface User {
+  id: number
+  firstName: string
+  lastName: string
+  role: string
+}
+ 
+function updateUser(id: number, update: Partial<User>) {
+  const user = getUser(id)
+  const newUser = { ...user, ...update }
+  saveUser(id, newUser)
+}
+```
+
+<hr/>
+
+### Callout
+
+Callout Support's `Title`, `Theme` and `Icon`. Also they all can be empty! <br/>
+Themes are `info` | `warning` | `success` | `error`. <br/>
+You can use <a href="https://emojipedia.org/" target="_blank" rel="noopener noreferrer">emoji</a> as icon. <br/> if you keep the `icon=""`; it will be default icon. and if you didn't set it; no icon will be shown. <br/>
+**You can use Markdown and HTML both inside callout.**
+
+```html
+<Callout title="Astro Is Awesome" theme="info" icon="🔥">
+  **Create your own platform on the web.** Astro is a tool for building static websites with your favorite JS framework. But it will ship zero JavaScript to the browser 🤯.
+</Callout>
+```
+
+<Callout title="Astro Is Awesome" theme="info" icon="🔥">
+  **Create your own platform on the web.** Astro is a tool for building static websites with your favorite JavaScript framework. But it will ship zero JavaScript to the browser 🤯.
+</Callout>
+
+<Callout title="This can't be done" theme="warning" icon="">
+  <p>This is some important information that you should know.</p>
+  <p>You can include multiple paragraphs or other HTML elements here.</p>
+</Callout>
+
+<Callout title="Successful result" theme="success" icon="">
+  <p>This is some important information that you should know.</p>
+  <p>You can include multiple paragraphs or other HTML elements here.</p>
+</Callout>
+
+<Callout title="No resources left" theme="error" icon="">
+  <p>This is some important information that you should know.</p>
+  <p>You can include multiple paragraphs or other HTML elements here.</p>
+</Callout>
+
+```html
+<Callout>
+  **Build your own online platform effortlessly.** Astro is a versatile framework for modern web creators to develop, deploy, and scale their content-driven projects.
+</Callout>
+```
+
+<Callout>
+  **Build your own online platform effortlessly.** Astro is a versatile framework for modern web creators to develop, deploy, and scale their content-driven projects.
+</Callout>
+
+### Blockquote
+
+> Since its beginning in the 1950s, the field of [artificial intelligence](#) has cycled several times between periods of optimistic predictions and investment
+<cite>Alexender Toto</cite>
+
+<hr/>
+
+### Bookmark / Links
+
+<LinkPreview id="https://astro.build/blog/welcome-world/" />
+<LinkPreview id="https://astro.build/" />
+
+<hr/>
+
+### Responsive Table
+
+Colons (`:---` left, `:---:` center and `---:` right) can be used to align columns.
+
+<div class="responsive-table">
+
+| Firsname | Lastname   | Age | Lives in     | Profession  |
+| -------- | :--------: | :---: | :--------: | ----------: |
+| Jill     | Smith      | 29  | New york     | Developer   |
+| Eve      | Jackson    | 36  | New york     | Musician    |
+
+</div>
+
+<hr/>
+
+### Image
+
+<AstroImage
+  src="/assets/blog/elements.jpg"
+  alt="qurno astrojs blog theme"
+  width={970}
+  height={500}
+  caption="Photo by [Nguyen Dang Hoang Nhu](https://unsplash.com/@nguyendhn) / [Unsplash](https://unsplash.com/)"
+/>
+
+<hr/>
+
+### Gallery
+<div class="gallery">
+  <AstroImage src="/assets/blog/01.jpg" alt="qurno astrojs blog theme" width={970} height={500} />
+  <AstroImage src="/assets/blog/02.jpg" alt="qurno astrojs blog theme" width={970} height={500} />
+  <AstroImage src="/assets/blog/03.jpg" alt="qurno astrojs blog theme" width={970} height={500} />
+  <AstroImage src="/assets/blog/04.jpg" alt="qurno astrojs blog theme" width={970} height={500} />
+  <AstroImage src="/assets/blog/05.jpg" alt="qurno astrojs blog theme" width={970} height={500} />
+  <AstroImage src="/assets/blog/06.jpg" alt="qurno astrojs blog theme" width={970} height={500} />
+</div>
+
+<hr/>
+
+### Youtube video
+
+<YouTube id="dsTXcSeAZq8" />
+
+<hr/>
+
+### Vimeo video
+
+<Vimeo id="341490793" />

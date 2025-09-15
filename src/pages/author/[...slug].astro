@@ -1,0 +1,82 @@
+---
+import type { CollectionEntry } from "astro:content";
+import { getCollection } from "astro:content";
+
+import { generateParagraph } from "@src/utils/generateParagraph";
+import { markdownify } from "@src/utils/textConverter";
+
+import BlogCard from "@components/BlogCard.astro";
+import AstroImage from "@components/helpers/AstroImage.astro";
+import Layout from '@layouts/Layout.astro';
+
+export async function getStaticPaths() {
+  const allPosts: CollectionEntry<"blog">[] = await getCollection("blog");
+  const allAuthors: CollectionEntry<"author">[] = await getCollection("author");
+
+  return allAuthors.map((author) => {
+    const authorPosts = allPosts
+      .filter((post) => post.data.author === author.data.title)
+      .sort(
+        (a: CollectionEntry<"blog">, b: CollectionEntry<"blog">) =>
+          b.data.date.valueOf() - a.data.date.valueOf()
+      );
+
+    return {
+      params: { slug: author.slug },
+      props: { author, authorPosts },
+    };
+  });
+}
+
+const { author, authorPosts } = Astro.props;
+
+const { title, subtitle, image } = author.data;
+const authorContent = await markdownify(author?.body ?? "");
+const authorPostCount = authorPosts.length > 9 ? authorPosts.length : "0" + authorPosts.length;
+---
+
+<Layout title={`Author - ${title}`} description={subtitle} image={image}>
+
+  <section class="section-sm pb-0">
+    <div class="container">
+      <div class="row">
+        <div class="lg:col-9 mx-auto">
+          <div class="flex flex-col sm:flex-row gap-6 sm:gap-10">
+            <AstroImage
+              class="rounded-clip mx-auto sm:mx-0 bg-white dark:bg-dark-dark h-32 w-32 sm:h-[200px] sm:w-[200px] flex-shrink-0"
+              src={author.data.image}
+              alt={author.data.title}
+              width={200}
+              height={200}
+            />
+            <div class="self-center text-center sm:text-start">
+              <h1 class="h3 text-dark mb-3">{title}</h1>
+              <div class="content [&>p]:mb-2 text-balance sm:text-wrap" set:html={generateParagraph(authorContent)} />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section-sm pb-0 bg-section">
+    <div class="container section-sm pb-0">
+      <div class="mb-12 sm:mb-16 relative z-10">
+        <p class="text-center mb-1 sm:mb-2">{title.split(" ")[0]} has</p>
+        <h2 class="h3 text-center">
+          <span class="font-secondary font-semibold">{authorPostCount}</span> Published Posts
+        </h2>
+        <svg class="mx-auto absolute -z-10 -top-[35%] left-1/2 -translate-x-1/2 text-primary dark:text-[#1f2531] h-28 sm:h-32 w-h-28 sm:w-32 opacity-[0.08] dark:opacity-80 pointer-events-none" xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M10.5 22H6.59c-1.545 0-2.774-.752-3.877-1.803c-2.26-2.153 1.45-3.873 2.865-4.715c2.55-1.52 5.628-1.87 8.422-1.054M16.5 6.5a4.5 4.5 0 1 1-9 0a4.5 4.5 0 0 1 9 0m1.933 7.349c.335-.364.503-.546.681-.652a1.4 1.4 0 0 1 1.397-.02c.18.1.354.277.7.63c.345.353.518.53.616.714c.238.447.23.988-.02 1.427c-.104.182-.282.353-.638.696l-4.231 4.075c-.674.65-1.011.974-1.432 1.139c-.421.164-.885.152-1.81.128l-.127-.003c-.282-.008-.422-.012-.504-.105s-.071-.236-.049-.523l.012-.156c.063-.808.095-1.213.253-1.576c.157-.363.43-.658.974-1.248z" color="currentColor"/></svg>
+      </div>
+      
+
+      <div class="row gy-6 gx-1">
+        {authorPosts.map((post) => (
+          <div class="md:col-6 lg:col-4">
+            <BlogCard post={post} allAuthors={null} variant="sm" />
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+</Layout>

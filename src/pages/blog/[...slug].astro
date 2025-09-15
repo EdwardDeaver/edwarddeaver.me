@@ -1,0 +1,153 @@
+---
+import type { CollectionEntry } from "astro:content";
+import { getCollection } from "astro:content";
+
+import { formatDate } from "@src/utils/formatDate";
+import { readingTime } from "@src/utils/readingTime";
+import { humanize, markdownify, slugify } from "@src/utils/textConverter";
+
+import AstroImage from "@components/helpers/AstroImage.astro";
+import SocialShare from "@components/SocialShare.astro";
+import TableOfContents from "@components/TableOfContents.astro";
+import Layout from '@layouts/Layout.astro';
+import { generateParagraph } from "@src/utils/generateParagraph";
+
+export async function getStaticPaths() {
+  const allPosts: CollectionEntry<"blog">[] = await getCollection("blog");
+  const allAuthors: CollectionEntry<"author">[] = await getCollection("author");
+
+  return allPosts.map((post) => {
+    const currentAuthor = allAuthors.find((author) => author.data.title === post.data.author);
+    return {
+      params: { slug: post.slug },
+      props: { post, currentAuthor },
+    };
+  });
+}
+
+const { post, currentAuthor } = Astro.props;
+
+const { title, description, image, date, author, tags, categories } = post.data;
+const keywords = [...tags, ...categories].join(", ");
+const formattedDate = formatDate(date);
+const postSlug = "/blog/" + post.slug;
+const postReadingTime = readingTime(post.body);
+
+const { Content, headings } = await post.render();
+const authorContent = await markdownify(currentAuthor?.body ?? "");
+---
+
+<Layout title={title} description={description} image={image} author={author} keywords={keywords}>
+  <section class="section-sm pb-0">
+    <div class="container">
+      <div class="row justify-center">
+        <div class="lg:col-9">
+          <h1 class="-mt-2 text-3xl sm:text-4xl lg:text-5xl mb-6 md:mb-8 !leading-snug lg:!leading-tight">{title}</h1>
+
+          <ul class="flex flex-wrap items-center gap-3 font-medium">
+            <li class="w-full sm:w-auto">
+              <a href={`/author/${currentAuthor?.slug}`} class="flex items-center gap-x-2 group">
+                <AstroImage
+                  class="bg-[#f4f0ed] dark:bg-[#2f3644] rounded-clip group-hover:opacity-75 transition-all duration-300 object-cover h-[26px] w-[26px]"
+                  src={currentAuthor?.data.image}
+                  alt={currentAuthor?.data.title + " profile image"}
+                  width={26}
+                  height={26}
+                />
+                <i class="not-italic">
+                  by <span class="group-hover:text-primary transition-all duration-300">{author}</span>
+                </i>
+              </a>
+            </li>
+            <li class="hidden sm:inline-block">—</li>
+            <li class="flex items-center gap-1">
+              <svg class="-translate-y-px" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 5m0 2a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2z" /><path d="M16 3l0 4" /><path d="M8 3l0 4" /><path d="M4 11l16 0" /><path d="M8 15h2v2h-2z" /></svg>
+              <span>{formattedDate}</span>
+            </li>
+            <li>—</li>
+            <li class="flex items-center gap-1">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0" /><path d="M12 7v5l3 3" /></svg>
+              <span>{postReadingTime}</span>
+            </li>
+          </ul>
+        </div>
+
+        <div class="lg:col-12 my-8 md:my-14">
+          <AstroImage
+            class="w-full h-auto max-h-[500px] object-cover rounded-md bg-[#f4f0ed] dark:bg-[#2f3644]"
+            src={image}
+            alt={title}
+            width={1120}
+            height={595}
+          />
+        </div>
+
+        <div class="lg:col-1 hidden lg:block">
+          <SocialShare title={title} postSlug={postSlug} />
+        </div>
+
+        <div class="lg:col-8 relative">
+          <TableOfContents headings={headings} />
+          <div class="content">
+            <Content />
+          </div>
+
+          <div class="flex gap-y-5 flex-col justify-start border-t border-dark/5 my-10 pt-10">
+            <ul class="flex flex-wrap items-center gap-2 sm:gap-3 [&_a]:block [&_a]:text-dark dark:[&_a]:text-white [&_a]:font-medium [&_a]:transition-all [&_a:hover]:text-primary dark:[&_a:hover]:text-primary-dark">
+              <li class="-mr-1">
+                <svg class="-mt-px" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M9 4h3l2 2h5a2 2 0 0 1 2 2v7a2 2 0 0 1 -2 2h-10a2 2 0 0 1 -2 -2v-9a2 2 0 0 1 2 -2" /><path d="M17 17v2a2 2 0 0 1 -2 2h-10a2 2 0 0 1 -2 -2v-9a2 2 0 0 1 2 -2h2" /></svg>
+              </li>
+              {
+                categories.map((category: string, i: number) => (
+                  <li class="flex items-center">
+                    <a href={`/categories/${slugify(category)}`}>{humanize(category)}</a>
+                    {i < categories.length - 1 && <span>,</span>}
+                  </li>
+                ))
+              }
+              <li class="opacity-50 mx-2">/</li>
+              <li>
+                <ul class="inline-flex flex-wrap items-center gap-2">
+                  {
+                    tags.map((tag: string) => (
+                      <li>
+                        <a class="text-sm text-gray dark:text-white bg-primary/10 dark:bg-dark-dark px-3 py-[5px] inline-block font-medium rounded-md hover:bg-primary dark:hover:bg-primary-dark hover:!text-white" href={`/tags/${slugify(tag)}`}>
+                          {humanize(tag)}
+                        </a>
+                      </li>
+                    ))
+                  }
+                </ul>
+              </li>
+            </ul>
+
+            <div class="block lg:hidden">
+              <SocialShare title={title} postSlug={postSlug} />
+            </div>
+          </div>
+
+          <div class="flex flex-col md:flex-row gap-y-4 items-start bg-white/50 dark:bg-dark-dark p-6 md:p-7 rounded-lg gap-x-6">
+            <AstroImage
+              class="rounded-clip bg-[#f4f0ed] dark:bg-[#2f3644] h-24 md:h-[135px] w-24 md:w-[135px] object-cover"
+              src={currentAuthor?.data.image}
+              alt={`profile image of ${currentAuthor?.data.title}`}
+              width={135}
+              height={135}
+            />
+
+            <div>
+              <p class="font-medium text-[20px] md:text-2xl text-black dark:text-white">{currentAuthor?.data.title}</p>
+              <div class="mt-2 md:mt-3 text-gray-500 line-clamp-2 [&_a]:underline [&_a]:text-gray [&_a:hover]:text-primary" set:html={generateParagraph(authorContent)} />
+              <a class="text-sm md:text-base mt-3 w-fit flex items-center gap-x-1 hover:text-primary dark:hover:text-primary-dark underline font-medium" href={`/author/${currentAuthor?.slug}`}>
+                Read all posts of {currentAuthor?.data.title.split(" ")[0]}
+                <svg class="h-4 md:h-[20px] w-4 md:w-[20px]" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon tabler-icon-arrow-up-right"><path d="M17 7l-10 10"></path><path d="M8 7l9 0l0 9"></path></svg>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</Layout>
+
+<script src="/scripts/lightense.min.js" is:inline data-astro-rerun></script>

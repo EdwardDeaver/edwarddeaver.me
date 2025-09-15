@@ -1,0 +1,95 @@
+---
+import AstroImage from "@components/helpers/AstroImage.astro";
+import { formatDate } from "@src/utils/formatDate";
+import { readingTime } from "@src/utils/readingTime";
+import { slugify } from "@src/utils/textConverter";
+import type { CollectionEntry } from "astro:content";
+
+interface Props {
+	post: CollectionEntry<"portfolio">
+	allAuthors: CollectionEntry<"author">[] | null
+	variant?: "xs" | "sm" | "lg"
+	loading?: "eager" | "lazy" | null | undefined
+}
+const { post, allAuthors, variant, loading } = Astro.props;
+
+const { title, description, image, date, author, tags } = post.data;
+const formattedDate = formatDate(date);
+const authorShortName = author.split(" ")[0];
+const postSlug = "/portfolio/" + post.slug;
+const authorSlug = "/author/" + slugify(author);
+const tagsSlug = (tag: string) => "/tags/" + slugify(tag);
+const postReadingTime = readingTime(post.body);
+
+const authorImage = allAuthors?.find((authorData) => authorData.data.title == author )?.data.image;
+---
+
+<article class="h-full flex flex-col group">
+	{image && (
+		<a
+			class="block relative z-10 mb-6"
+			href={postSlug}
+			title={title}
+		>
+			<AstroImage
+				class="w-full h-auto transition-all duration-300 rounded-md md:group-hover:-translate-y-1 bg-[#f4f0ed] dark:bg-[#141414] dark:hover:bg-[#2f3644] aspect-video object-cover"
+				src={image}
+				alt={title}
+				width={970}
+				height={500}
+				loading={loading}
+			/>
+		</a>
+	)}
+
+	<ul class={`flex flex-wrap items-center gap-x-3 mb-5 font-medium ${variant === "xs" ? "text-sm" : ""}`}>
+		<li class="flex items-center gap-1">
+			<svg class="-translate-y-px" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 5m0 2a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2z" /><path d="M16 3l0 4" /><path d="M8 3l0 4" /><path d="M4 11l16 0" /><path d="M8 15h2v2h-2z" /></svg>
+			<span>{formattedDate}</span>
+		</li>
+		<li>—</li>
+		<li class="flex items-center gap-1">
+			<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0" /><path d="M12 7v5l3 3" /></svg>
+			<span>{postReadingTime}</span>
+		</li>
+	</ul>
+
+	<h3 class={`mb-3 text-balance line-clamp-2 ${variant === "sm" || variant === "xs" ? "h4" : "text-xl md:text-3xl"}`}>
+		<a class="block text-dark dark:text-white hover:text-primary hover:dark:text-primary-dark dark:hover:brightness-[115%]" href={postSlug}>{title}</a>
+	</h3>
+
+	<p class="line-clamp-2">{description}</p>
+	
+	<ul class="flex flex-wrap items-center gap-x-4 gap-y-2 mt-6">
+		{authorImage && variant !== "xs" && (
+			<li class="flex">
+				<a
+					href={authorSlug}
+					class="inline-flex items-center gap-1 font-medium group/author text-dark/70 dark:text-gray-dark hover:text-dark/70 hover:dark:text-gray-dark"
+					title={`Read all posts of - ${author}`}
+				>
+					<AstroImage
+						class="w-6 h-6 rounded-clip mr-1 group-hover/author:opacity-75 transition-all duration-300"
+						src={authorImage}
+						alt={author}
+						width={26}
+						height={26}
+					/>
+					by
+					<span class="text-dark dark:text-white group-hover/author:text-primary dark:group-hover/author:text-primary-dark dark:hover:brightness-[115%] transition-all duration-300">
+						{authorShortName}
+					</span>
+				</a>
+			</li>
+			<li class="text-dark dark:text-white">•</li>
+		)}
+		<li>
+			<ul class="inline-flex flex-wrap items-center gap-2">
+				{tags.slice(0, 2).map((tag: string) => (
+					<li><a class="text-sm text-gray dark:text-white bg-primary/10 dark:bg-dark-dark px-3 py-[5px] inline-block font-medium rounded-md hover:bg-primary dark:hover:bg-primary-dark hover:text-white" href={tagsSlug(tag)}>{tag}</a></li>
+				))}
+				{tags.length > 2 && <li class="text-sm text-gray dark:text-white bg-primary/10 dark:bg-dark-dark px-3 py-[5px] inline-block font-medium rounded-md">+{tags.length - 2}</li>}
+			</ul>
+		</li>
+	</ul>
+</article>

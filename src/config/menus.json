@@ -1,0 +1,138 @@
+{
+  "mainMenu": [
+    {
+      "name": "Home",
+      "link": "#",
+      "submenu": [
+        {
+          "name": "Home 01",
+          "link": "/",
+          "target": "",
+          "rel": ""
+        },
+        {
+          "name": "Home 02",
+          "link": "/home-02",
+          "target": "",
+          "rel": ""
+        },
+        {
+          "name": "Home 03",
+          "link": "/home-03",
+          "target": "",
+          "rel": ""
+        }
+      ]
+    },
+    {
+      "name": "About",
+      "link": "/about",
+      "target": "",
+      "rel": ""
+    },
+    {
+      "name": "Blog",
+      "link": "/blog",
+      "target": "",
+      "rel": ""
+    },
+    {
+      "name": "Elements",
+      "link": "/blog/elements",
+      "target": "",
+      "rel": ""
+    },
+    {
+      "name": "Pages",
+      "link": "#",
+      "submenu": [
+        {
+          "name": "Archive",
+          "link": "/blog/archive",
+          "target": "",
+          "rel": ""
+        },
+        {
+          "name": "Author",
+          "link": "/author",
+          "target": "",
+          "rel": ""
+        },
+        {
+          "name": "Author Single",
+          "link": "/author/chris-impey",
+          "target": "",
+          "rel": ""
+        },
+        {
+          "name": "Tags",
+          "link": "/tags",
+          "target": "",
+          "rel": ""
+        },
+        {
+          "name": "Categories",
+          "link": "/categories",
+          "target": "",
+          "rel": ""
+        },
+        {
+          "name": "Tag Single",
+          "link": "/tags/machine",
+          "target": "",
+          "rel": ""
+        },
+        {
+          "name": "Category Single",
+          "link": "/categories/ai",
+          "target": "",
+          "rel": ""
+        },
+        {
+          "name": "404 Page",
+          "link": "/404-page",
+          "target": "",
+          "rel": ""
+        },
+        {
+          "name": "Privacy",
+          "link": "/privacy",
+          "target": "",
+          "rel": ""
+        },
+        {
+          "name": "RSS",
+          "link": "/rss.xml",
+          "target": "_blank",
+          "rel": ""
+        }
+      ]
+    },
+    {
+      "name": "Contact",
+      "link": "/contact",
+      "target": "",
+      "rel": ""
+    }
+  ],
+  "footerMenu": [
+    {
+      "name": "Privacy Policy",
+      "link": "/privacy",
+      "target": "",
+      "rel": ""
+    },
+    {
+      "name": "RSS",
+      "link": "/rss.xml",
+      "target": "",
+      "rel": ""
+    },
+    {
+      "name": "404 Page",
+      "link": "/404-page",
+      "target": "",
+      "rel": ""
+    }
+  ]
+}

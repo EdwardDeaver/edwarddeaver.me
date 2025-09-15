@@ -1,0 +1,96 @@
+---
+interface Props {
+  title?: string;
+  meta_title?: string;
+  description?: string;
+  author?: string;
+  image?: string;
+  keywords?: string;
+  noindex?: boolean;
+  canonical?: string;
+}
+
+import { favicon, metadata } from "@config/site.config.json";
+import { ClientRouter } from "astro:transitions";
+
+const { title, meta_title, description, author, image, keywords, noindex, canonical } = Astro.props;
+
+const meta_page_title = meta_title ? meta_title : title ? title : metadata.title;
+const meta_description = description ? description : metadata.description;
+const og_image = image ? image : metadata.image;
+
+import DeviceSizeIndicator from "@components/helpers/DeviceSizeIndicator.astro";
+import ThemeScript from "@components/helpers/ThemeScript.astro";
+import Footer from "@layouts/Footer.astro";
+import Header from "@layouts/Header.astro";
+
+// font
+import { AstroFont } from "astro-font";
+
+// styles
+import "@styles/styles.scss";
+---
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <ClientRouter />
+    <ThemeScript />
+
+    <AstroFont
+      config={[
+        {
+          src: [],
+          name: "CreteRound",
+          preload: true,
+          display: "swap",
+          fallback: "serif",
+          cssVariable: "font-primary",
+          googleFontsURL: 'https://fonts.googleapis.com/css2?family=Crete+Round&display=swap'
+        },
+        {
+          src: [],
+          name: "WorkSans",
+          preload: true,
+          display: "swap",
+          fallback: "sans-serif",
+          cssVariable: "font-secondary",
+          googleFontsURL: 'https://fonts.googleapis.com/css2?family=Work+Sans:wght@400..700&display=swap'
+        },
+      ]}
+    />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="generator" content={Astro.generator} />
+    <title>{meta_page_title}</title>
+
+    <meta name="keywords" content={keywords ? keywords : metadata.keywords} />
+    <meta name="author" content={author ? author : metadata.author} />
+    <meta name="description" content={meta_description} />
+    <meta property="og:title" content={meta_page_title} />
+    <meta property="og:description" content={meta_description} />
+    <meta property="og:image" content={og_image} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+
+    <meta name="twitter:title" content={meta_page_title} />
+    <meta name="twitter:image" content={og_image} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:description" content={meta_description} />
+
+    <link rel="shortcut icon" href={favicon} type="image/x-icon" />
+
+    {canonical && <link rel="canonical" href={canonical} item-prop="url" />}
+    {noindex && <meta name="robots" content="noindex,nofollow" />}
+  </head>
+  <body class="flex flex-col min-h-screen">
+    <Header />
+    <main class="pt-[5.25rem] sm:pt-24 lg:pt-[7.4rem]">
+      <slot />
+    </main>
+    <Footer />
+    
+    {process.env.NODE_ENV === "development" && <DeviceSizeIndicator /> }
+  </body>
+</html>

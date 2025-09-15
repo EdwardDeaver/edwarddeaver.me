@@ -1,0 +1,331 @@
+fragment MenusParts on Menus {
+  __typename
+  mainMenu {
+    __typename
+    name
+    link
+    target
+    rel
+    submenu {
+      __typename
+      name
+      link
+      target
+      rel
+    }
+  }
+  footerMenu {
+    __typename
+    name
+    link
+    target
+    rel
+  }
+}
+
+fragment ConfigParts on Config {
+  __typename
+  baseURL
+  favicon
+  basePath
+  trailingSlash
+  logo {
+    __typename
+    src
+    src_light
+    alt
+    width
+    height
+  }
+  metadata {
+    __typename
+    title
+    description
+    author
+    keywords
+    image
+  }
+  settings {
+    __typename
+    homepage_post_count
+    pagination
+    copyright
+  }
+}
+
+fragment SubscriptionParts on Subscription {
+  __typename
+  title
+  mailChimpFormAction
+  mailChimpFormName
+  formPlaceholder
+  formButtonLabel
+}
+
+fragment HomeParts on Home {
+  __typename
+  title
+  metadata {
+    __typename
+    title
+    description
+    author
+    image
+    keywords
+    noindex
+    canonical
+  }
+  recent_posts {
+    __typename
+    enable
+    title
+    button_label
+  }
+}
+
+fragment Home2Parts on Home2 {
+  __typename
+  metadata {
+    __typename
+    title
+    description
+    author
+    image
+    keywords
+    noindex
+    canonical
+  }
+  image
+  subtitle
+  title
+  description
+  banner_button_label
+  social_links {
+    __typename
+    enable
+    twitter
+    facebook
+    linkedin
+  }
+  recent_posts {
+    __typename
+    enable
+    title
+    button_label
+  }
+}
+
+fragment Home3Parts on Home3 {
+  __typename
+  metadata {
+    __typename
+    title
+    description
+    author
+    image
+    keywords
+    noindex
+    canonical
+  }
+  featured_posts {
+    __typename
+    enable
+    title
+  }
+  recent_posts {
+    __typename
+    enable
+    title
+    button_label
+  }
+}
+
+fragment AboutParts on About {
+  __typename
+  draft
+  title
+  metadata {
+    __typename
+    title
+    description
+    author
+    image
+    keywords
+    noindex
+    canonical
+  }
+  intro {
+    __typename
+    title
+    images {
+      __typename
+      src
+      width
+      height
+      grid_class
+    }
+    description
+  }
+  our_writers {
+    __typename
+    enable
+    title
+  }
+}
+
+fragment Author_pageParts on Author_page {
+  __typename
+  draft
+  title
+  metadata {
+    __typename
+    title
+    description
+    author
+    image
+    keywords
+    noindex
+    canonical
+  }
+}
+
+fragment AuthorParts on Author {
+  __typename
+  title
+  subtitle
+  image
+  body
+}
+
+fragment BlogParts on Blog {
+  __typename
+  draft
+  featured
+  date
+  title
+  description
+  author
+  categories
+  tags
+  image
+  body
+}
+
+fragment PortfolioParts on Portfolio {
+  __typename
+  draft
+  featured
+  date
+  title
+  description
+  author
+  categories
+  tags
+  image
+  body
+}
+
+fragment CategoriesParts on Categories {
+  __typename
+  draft
+  title
+  metadata {
+    __typename
+    title
+    description
+    author
+    image
+    keywords
+    noindex
+    canonical
+  }
+  recent_posts {
+    __typename
+    enable
+    title
+    visible_posts_count
+    button_label
+  }
+}
+
+fragment TagsParts on Tags {
+  __typename
+  draft
+  title
+  metadata {
+    __typename
+    title
+    description
+    author
+    image
+    keywords
+    noindex
+    canonical
+  }
+  recent_posts {
+    __typename
+    enable
+    title
+    visible_posts_count
+    button_label
+  }
+}
+
+fragment ArchiveParts on Archive {
+  __typename
+  draft
+  title
+  metadata {
+    __typename
+    title
+    description
+    author
+    image
+    keywords
+    noindex
+    canonical
+  }
+}
+
+fragment ContactParts on Contact {
+  __typename
+  draft
+  title
+  metadata {
+    __typename
+    title
+    description
+    author
+    image
+    keywords
+    noindex
+    canonical
+  }
+  contact_form {
+    __typename
+    title
+    description
+    contact_info_title
+    email_address
+    phone_number
+    contact_email
+    form_button_text
+  }
+}
+
+fragment PrivacyParts on Privacy {
+  __typename
+  draft
+  title
+  metadata {
+    __typename
+    title
+    description
+    author
+    image
+    keywords
+    noindex
+    canonical
+  }
+  body
+}

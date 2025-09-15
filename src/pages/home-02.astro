@@ -1,0 +1,79 @@
+---
+import { settings } from "@config/site.config.json";
+
+import BannerTwo from "@components/BannerTwo.astro";
+import BlogCard from "@components/PortfolioCard.astro";
+import Layout from '@layouts/Layout.astro';
+
+import type { CollectionEntry } from "astro:content";
+import { getCollection, getEntry } from "astro:content";
+
+const allAuthors: CollectionEntry<"author">[] = await getCollection("author");
+const allPosts: CollectionEntry<"portfolio">[] = (await getCollection("portfolio"))
+  .sort(
+    (a: CollectionEntry<"portfolio">, b: CollectionEntry<"portfolio">) =>
+      b.data.date.valueOf() - a.data.date.valueOf()
+  )
+  .slice(0, settings?.homepage_post_count || 6);
+
+const homePage = await getEntry("pages", "-index-2");
+const {
+  subtitle,
+  title,
+  image,
+  description,
+  metadata,
+  banner_button_label,
+  social_links,
+  recent_posts
+} : any = homePage?.data;
+---
+
+<Layout
+  title={title}
+  meta_title={metadata.title}
+  description={metadata.description} 
+  image={metadata.image} 
+  author={metadata.author} 
+  keywords={metadata.keywords} 
+  noindex={metadata.noindex} 
+  canonical={metadata.canonical}
+>
+	<BannerTwo
+    subtitle={subtitle}
+    title={title}
+    image={image}
+    description={description}
+    banner_button_label={banner_button_label}
+    social_links={social_links}
+  />
+
+  {recent_posts?.enable && (
+    <section id="posts" class="section-sm pb-0 bg-section after:top-0">
+      <div class="container">
+        <h2 class="section-title text-center">
+          <span>{recent_posts.title}</span>
+        </h2>
+        <div class="row gy-6 gx-4">
+          
+          {allPosts.map((post, index) => (
+            <div class="lg:col-6">
+              <BlogCard
+                post={post}
+                allAuthors={allAuthors}
+                loading={(index === 0 || index === 1) ? "eager" : "lazy"}
+              />
+            </div>
+          ))}
+
+          <div class="col-12 text-center">
+            <a class="btn btn-primary mt-8 capitalize" href="/blog" aria-label="View all posts">
+              <svg class="me-1" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M9 12h6"></path><path d="M12 9v6"></path><path d="M4 6V5a1 1 0 011-1h1m5 0h2m5 0h1a1 1 0 011 1v1m0 5v2m0 5v1a1 1 0 01-1 1h-1m-5 0h-2m-5 0H5a1 1 0 01-1-1v-1m0-5v-2m0-5"></path></svg>
+              {recent_posts.button_label}
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+  )}
+</Layout>

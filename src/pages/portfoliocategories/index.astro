@@ -1,0 +1,91 @@
+---
+import BlogCard from "@components/PortfolioCard.astro";
+import PageHeader from "@components/PageHeader.astro";
+import Layout from '@layouts/Layout.astro';
+import { getTaxonomyWithCounts } from "@src/utils/taxonomy";
+import { humanize, slugify } from "@src/utils/textConverter";
+
+import type { CollectionEntry } from "astro:content";
+import { getCollection, getEntry } from 'astro:content';
+
+const allAuthors: CollectionEntry<"author">[] = await getCollection("author");
+const allPosts: CollectionEntry<"portfolio">[] = (await getCollection("portfolio")).sort(
+  (a: CollectionEntry<"portfolio">, b: CollectionEntry<"portfolio">) =>
+    b.data.date.valueOf() - a.data.date.valueOf()
+);
+
+// all tags
+const {
+  allItems: allTags,
+  itemCounts: tagCounts 
+} = getTaxonomyWithCounts(allPosts, 'tags');
+
+const tagPage = await getEntry("pages", "tags");
+
+if (!tagPage || tagPage?.data.draft) {
+  const res = new Response(null, { status: 404, });
+  res.headers.append("content-type", "text/html")
+  return res;
+}
+
+const { title, metadata, recent_posts } : any = tagPage?.data;
+---
+
+<Layout
+  title={title}
+  meta_title={metadata.title}
+  description={metadata.description} 
+  image={metadata.image} 
+  author={metadata.author} 
+  keywords={metadata.keywords} 
+  noindex={metadata.noindex} 
+  canonical={metadata.canonical}
+>
+  <PageHeader title={title} class="-mb-6" />
+
+  <section>
+    <div class="container">
+      <div class="row">
+        <div class="lg:col-10 mx-auto">
+          <ul class="flex flex-wrap items-center justify-center gap-3">
+            {allTags.map((tag) => (
+              <li>
+                <a class="group bg-white dark:bg-dark-dark rounded-lg text-sm sm:text-base px-3 sm:px-5 py-2 sm:py-[10px] flex items-center gap-x-2 font-medium transition-all duration-200 hover:bg-primary dark:hover:bg-primary-dark hover:text-white" href={`/portfoliocategories/${slugify(tag)}`}>
+                  {humanize(tag)}
+                  {tagCounts[tag] > 1 && (
+                    <span class="-mr-px sm:mr-0 bg-primary dark:bg-primary-dark text-white rounded-full group-hover:bg-white group-hover:text-primary dark:group-hover:text-primary-dark h-5 w-5 inline-grid place-content-center text-xs font-semibold transition-all duration-200">{tagCounts[tag]}</span>
+                  )}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+  
+  {recent_posts?.enable && (  
+    <section class="section-sm pb-0 bg-section">
+      <div class="container section-sm pb-0">
+        <h2 class="section-title text-center">
+          <span>{recent_posts.title}</span>
+        </h2>
+        <div class="row gy-6 gx-1">
+          
+          {allPosts.slice(0, 3).map((post) => (
+            <div class="lg:col-6 xl:col-4">
+              <BlogCard post={post} allAuthors={allAuthors} variant="sm" />
+            </div>
+          ))}
+
+          <div class="col-12 text-center">
+            <a class="btn btn-primary mt-8 capitalize" href="/portfolio" aria-label="View all posts">
+              <svg class="me-1" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M9 12h6"></path><path d="M12 9v6"></path><path d="M4 6V5a1 1 0 011-1h1m5 0h2m5 0h1a1 1 0 011 1v1m0 5v2m0 5v1a1 1 0 01-1 1h-1m-5 0h-2m-5 0H5a1 1 0 01-1-1v-1m0-5v-2m0-5"></path></svg>
+              {recent_posts.button_label}
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+  )}
+</Layout>

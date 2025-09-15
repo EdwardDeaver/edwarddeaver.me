@@ -1,0 +1,84 @@
+---
+import PageHeader from "@components/PageHeader.astro";
+import Layout from '@layouts/Layout.astro';
+
+import type { CollectionEntry } from "astro:content";
+import { getCollection, getEntry } from 'astro:content';
+const archivePage = await getEntry("pages", "archive");
+
+if (!archivePage || archivePage?.data.draft) {
+  const res = new Response(null, { status: 404, });
+  res.headers.append("content-type", "text/html")
+  return res;
+}
+
+const { title, metadata } : any = archivePage?.data;
+
+const allPosts: CollectionEntry<"blog">[] = await getCollection("blog");
+
+// group allPosts by year
+const postsByYear: Record<string, CollectionEntry<"blog">[]> = {};
+allPosts.forEach((post) => {
+  const year = post.data.date.getFullYear();
+  if (!postsByYear[year]) {
+    postsByYear[year] = [];
+  }
+  postsByYear[year].push(post);
+});
+
+// sort posts by year
+const sortedPostsByYear = 
+  Object.entries(postsByYear).sort((a, b) => parseInt(b[0], 10) - parseInt(a[0], 10));
+
+// formatDateByMonth
+const formatDateByMonth = (a: string) => {
+  const longEnUSFormatter = new Intl.DateTimeFormat("en-GB", {
+    day: "2-digit",
+    month: "short",
+  });
+  const date = new Date(a);
+  return longEnUSFormatter.format(date);
+};
+---
+
+<Layout
+  title={title}
+  meta_title={metadata.title}
+  description={metadata.description} 
+  image={metadata.image} 
+  author={metadata.author} 
+  keywords={metadata.keywords} 
+  noindex={metadata.noindex} 
+  canonical={metadata.canonical}
+>
+  <PageHeader title="archive" />
+
+  <section>
+    <div class="container">
+      <div class="row justify-center">
+        <div class="lg:col-10">
+          {sortedPostsByYear.map(([year, posts]) => (
+            <h2 class="h3 [&:not(:first-child)]:mt-10 mb-5 font-secondary font-semibold relative flex items-center">
+              <svg class="hidden sm:block absolute text-[#f2ebe5] dark:text-[#252b37] -top-6 -ml-6" xmlns="http://www.w3.org/2000/svg" width="78" height="78" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M3 4m0 2a2 2 0 012-2h14a2 2 0 012 2v0a2 2 0 01-2 2H5A2 2 0 013 6z"></path><path d="M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8"></path></svg>
+              <span>{year}</span>
+              <hr class="border-primary/10 w-full ml-7" />
+            </h2>
+            <>
+              {posts.map((post) => (
+                <div class="text-base md:text-lg flex flex-col sm:flex-row mt-4 sm:mt-0">
+                  <span class="flex-shrink-0 sm:w-16 md:w-20 sm:py-3 -mb-1 sm:mb-0 rounded-sm w-fit px-2 sm:px-0 bg-primary/10 sm:bg-transparent">
+                    {formatDateByMonth(`${post.data.date}`)}
+                  </span>
+                  <span class="hidden sm:inline-block mx-5 py-3">•</span>
+                  <a class="text-[17px] md:text-lg flex-grow py-3 pr-4 relative after:content-[''] after:absolute after:left-0 after:bottom-0 after:w-full after:h-full after:bg-gradient-to-r after:from-body dark:after:from-body-dark after:to-primary/20 dark:after:to-primary-dark/10 after:scale-[0.99] after:opacity-0 after:rounded-md after:transition-all after:duration-300 after:-z-10 hover:after:scale-100 hover:after:opacity-100" title={post.data.title} href={`/blog/${post.slug}`}>
+                    {post.data.title}
+                  </a>
+                </div>
+              ))}
+            </>
+          ))}
+        </div>
+      </div>
+    </div>
+  </section>
+</Layout>

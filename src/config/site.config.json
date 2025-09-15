@@ -1,0 +1,34 @@
+{
+  "baseURL" : "https://qurno-astro.vercel.app",
+  "favicon" : "/favicon.png",
+  "basePath": "/",
+  "trailingSlash": false,
+
+  "logo": {
+    "src" : "/assets/logo.svg",
+    "src_light" : "/assets/logo-white.svg",
+    "alt" : "Edward Deaver",
+    "width" : 115,
+    "height" : 35
+  },
+
+  "metadata": {
+    "title" : "Edward Deaver",
+    "description" : "Edward Deaver's portfolio and blog",
+    "author" : "Edward Deaver",
+    "keywords" : "interactiveart, creative coding, generative art, edward deaver, portfolio, blog",
+    "image" : "https://qurno-astro.vercel.app/assets/ogimage.jpg"
+  },
+
+  "settings": {
+    "homepage_post_count" : 6,
+    "pagination" : 6,
+    "copyright" : "© 2024 Qurno. All rights reserved."
+  }, 
+  "social": {
+    "enable" : true,
+    "linkedin" : "https://www.linkedin.com/in/edwardcdeaveriv/",
+    "github" : "https://www.github.com/edwarddeaver",
+    "instagram" : "https://www.instagram.com/edwarddeaver.me/"
+  }
+}

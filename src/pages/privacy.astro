@@ -1,0 +1,42 @@
+---
+import PageHeader from "@components/PageHeader.astro";
+import Layout from '@layouts/Layout.astro';
+
+import { getEntry, render } from "astro:content";
+const privacyPage = await getEntry("pages", "privacy");
+
+if (!privacyPage || privacyPage?.data.draft) {
+  const res = new Response(null, { status: 404, });
+  res.headers.append("content-type", "text/html")
+  return res;
+}
+
+const { title, metadata } : any = privacyPage?.data;
+
+const { Content } = await render(privacyPage);
+---
+
+<Layout 
+  title={title}
+  meta_title={metadata.title}
+  description={metadata.description} 
+  image={metadata.image} 
+  author={metadata.author} 
+  keywords={metadata.keywords} 
+  noindex={metadata.noindex} 
+  canonical={metadata.canonical}
+>
+  <PageHeader title={title} />
+
+	<section>
+    <div class="container">
+      <div class="row">
+        <div class="lg:col-10 mx-auto">
+          <div class="content">
+            {Content && <Content />}
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</Layout>

@@ -1,0 +1,85 @@
+---
+import TableOfContentsHeading from "@components/TableOfContentsHeading.astro";
+type Heading = {
+  depth: number;
+  title: string;
+  subheadings: Heading[];
+};
+
+const { headings } = Astro.props;
+
+const buildToc = (headings: Heading[]): Heading[] => {
+  const toc: Heading[] = [];
+  const parentHeadings = new Map<number, Heading>();
+
+  headings.forEach((h) => {
+    // Skip headings with depth 4 or 5 or 6
+    if (h.depth === 4 ||h.depth === 5 || h.depth === 6) return;
+
+    const heading: Heading = { ...h, subheadings: [] };
+    parentHeadings.set(heading.depth, heading);
+
+    if (heading.depth === 2) {
+      toc.push(heading);
+    } else {
+      const parentHeading = parentHeadings.get(heading.depth - 1);
+      if (parentHeading) {
+        parentHeading.subheadings.push(heading);
+      } else {
+        toc.push(heading);
+      }
+    }
+  });
+
+  return toc;
+};
+
+const toc = buildToc(headings);
+---
+
+{toc && toc.length > 0 && (
+  <nav class="toc fixed right-0 top-20 z-10">
+    <div class="bg-white dark:bg-dark-dark rounded-s-lg">
+      <ul class="grid gap-2 overflow-y-auto p-8">
+        <li class="uppercase font-medium text-sm mb-4 opacity-65">In this article</li>
+        {toc.map((heading) => <TableOfContentsHeading heading={heading} />)}
+      </ul>
+    </div>
+    <button class="toc-button" type="button">
+      <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="currentColor" viewBox="0 0 256 256"><path d="M88,64a8,8,0,0,1,8-8H216a8,8,0,0,1,0,16H96A8,8,0,0,1,88,64Zm128,56H96a8,8,0,0,0,0,16H216a8,8,0,0,0,0-16Zm0,64H96a8,8,0,0,0,0,16H216a8,8,0,0,0,0-16ZM56,56H40a8,8,0,0,0,0,16H56a8,8,0,0,0,0-16Zm0,64H40a8,8,0,0,0,0,16H56a8,8,0,0,0,0-16Zm0,64H40a8,8,0,0,0,0,16H56a8,8,0,0,0,0-16Z"></path></svg>
+    </button>
+  </nav>
+)}
+
+<script>
+  document.addEventListener('astro:page-load', () => {
+    const toc = document.querySelector(".toc") as HTMLElement;
+    const tocButton = document.querySelector(".toc-button") as HTMLElement;
+    const content = document.querySelector(".content") as HTMLElement;
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          toc?.classList.add("active");
+        } else {
+          toc?.classList.remove("active");
+        }
+      });
+    }, {
+      root: null,
+      threshold: 0,
+      rootMargin: "0px 0px -80% 0px"
+    });
+
+    if (content) {
+      observer.observe(content);
+    }
+
+    localStorage.getItem("tocVisible") === "false" && toc?.classList.add("not-visible");
+
+    tocButton?.addEventListener("click", () => {
+      toc?.classList.toggle("not-visible");
+      localStorage.setItem("tocVisible", toc?.classList.contains("not-visible") ? "false" : "true");
+    });
+  });
+</script>

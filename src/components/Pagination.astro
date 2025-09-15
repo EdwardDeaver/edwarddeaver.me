@@ -1,0 +1,86 @@
+---
+type Pagination = {
+  section?: string;
+  currentPage?: number;
+  totalPages?: number;
+};
+const { section, currentPage = 1, totalPages = 1 }: Pagination = Astro.props;
+
+const indexPageLink = currentPage === 2;
+const hasPrevPage = currentPage > 1;
+const hasNextPage = totalPages > currentPage!;
+
+let pageList: number[] = [];
+for (let i = 1; i <= totalPages; i++) {
+  pageList.push(i);
+}
+---
+
+{totalPages > 1 ? (
+  <div class="text-center pt-10">
+    <nav
+      class="p-2 justify-center border border-white dark:border-[#3c4352] rounded-lg inline-flex mx-auto gap-x-2"
+      aria-label="Pagination"
+    >
+      {/* previous */}
+      {hasPrevPage ? (
+        <a
+          href={
+            indexPageLink
+              ? `/${section ? section : ""}`
+              : `/${section ? section : ""}/page/${currentPage - 1}`
+          }
+          class="rounded h-11 px-5 grid items-center font-medium bg-white dark:bg-dark-dark text-dark dark:text-white hover:bg-primary dark:hover:bg-primary-dark hover:text-white"
+        >
+          Prev
+        </a>
+      ) : (
+        <span class="rounded h-11 px-5 grid items-center font-medium bg-white dark:bg-dark-dark text-dark/30 dark:text-white/30 select-none">Prev</span>
+      )}
+
+      {/* page index */}
+      {pageList.map((pagination: number, i: number) =>
+        pagination === currentPage ? (
+          <span
+            aria-current="page"
+            class="rounded bg-primary text-white dark:bg-primary-dark h-11 w-11 grid items-center font-medium"
+          >
+            {pagination}
+          </span>
+        ) : (
+          <a
+            href={
+              i === 0
+                ? `/${section ? section : ""}`
+                : `/${section ? section : ""}/page/${pagination}`
+            }
+            aria-current="page"
+            class="rounded h-11 w-11 grid items-center font-medium bg-white dark:bg-dark-dark text-dark dark:text-white hover:bg-primary hover:dark:bg-primary-dark hover:text-white"
+          >
+            {pagination}
+          </a>
+        )
+      )}
+
+      {/* next page */}
+      {hasNextPage ? (
+        <a
+          href={`/${section ? section : ""}/page/${currentPage + 1}`}
+          class="rounded h-11 px-5 grid items-center font-medium bg-white dark:bg-dark-dark text-dark dark:text-white hover:bg-primary hover:dark:bg-primary-dark hover:text-white"
+          aria-label="Next page"
+        >
+          Next
+        </a>
+      ) : (
+        <span class="rounded h-11 px-5 grid items-center font-medium bg-white dark:bg-dark-dark text-dark/30 dark:text-white/30 select-none">Next</span>
+      )}
+    </nav>
+  </div>
+) : (
+  <div class="text-center pt-10">
+    <div class="container">
+      <svg class="text-primary dark:text-primary-dark mx-auto mb-3 opacity-50" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" color="currentColor"><path d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12s4.477 10 10 10s10-4.477 10-10"/><path d="m8 12.5l2.5 2.5L16 9"/></g></svg>
+      <p class="mb-0 opacity-50">That's all, no more posts</p>
+    </div>
+  </div>
+)}

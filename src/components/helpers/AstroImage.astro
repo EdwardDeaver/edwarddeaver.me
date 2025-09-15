@@ -1,0 +1,102 @@
+---
+import { markdownify } from "@src/utils/textConverter";
+import type { ImageMetadata } from "astro";
+import { Image } from "astro:assets";
+
+interface Props {
+  src: string | undefined;
+  alt: string;
+  width: number;
+  height: number;
+  loading?: "eager" | "lazy" | null | undefined;
+  decoding?: "async" | "auto" | "sync" | null | undefined;
+  format?: "auto" | "avif" | "jpeg" | "png" | "svg" | "webp";
+  class?: string;
+  style?: Record<string, string>;
+  caption?: string;
+  widths?: number[];
+  sizes?: string;
+}
+
+// Define type for Image component props
+type ImageProps = {
+  src: Promise<{ default: ImageMetadata }>;
+  alt: string;
+  width: number;
+  height: number;
+  loading?: "eager" | "lazy" | null | undefined;
+  decoding?: "async" | "auto" | "sync" | null | undefined;
+  format?: "auto" | "avif" | "jpeg" | "png" | "svg" | "webp";
+  class?: string;
+  style?: Record<string, string>;
+  widths?: number[];
+  sizes?: string;
+};
+
+const {
+  src,
+  alt,
+  width,
+  height,
+  loading,
+  decoding,
+  class: className,
+  format,
+  style,
+  caption,
+  widths,
+  sizes,
+} = Astro.props;
+
+// Helper function to normalize the source path
+const normalizeSrcPath = (path: string | undefined): string => {
+  if (!path) return "/src/assets/placeholder.jpg";
+  const prefix = path.startsWith("a") ? "/src/" : "/src";
+  return `${prefix}${path}`;
+};
+
+// Glob pattern to load images
+const images = import.meta.glob<{ default: ImageMetadata }>(
+  '/src/assets/**/*.{jpeg,jpg,png,gif,svg}'
+);
+
+const normalizedSrc = normalizeSrcPath(src);
+
+// Validate image path
+if (!images[normalizedSrc]) {
+  throw new Error(
+    `Image "${normalizedSrc}" does not exist in: "/src/assets/**/*.{jpeg,jpg,png,gif,svg}"`
+  );
+}
+
+// Build image props object with proper typing
+const imageProps: ImageProps = {
+  src: images[normalizedSrc](),
+  alt,
+  width,
+  height,
+};
+
+// Only add optional props if they are provided
+if (loading) imageProps.loading = loading;
+if (decoding) imageProps.decoding = decoding;
+if (className) imageProps.class = className;
+if (format) imageProps.format = format;
+if (style) imageProps.style = style;
+if (widths) imageProps.widths = widths;
+if (sizes) imageProps.sizes = sizes;
+---
+
+{
+  caption ? (
+    <figure class="image-container">
+      <Image {...imageProps} />
+      <figcaption 
+        class="text-gray-500 text-center mt-2" 
+        set:html={markdownify(caption)}
+      />
+    </figure>
+  ) : (
+    <Image {...imageProps} />
+  )
+}

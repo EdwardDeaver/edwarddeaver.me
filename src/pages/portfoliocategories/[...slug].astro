@@ -1,0 +1,90 @@
+---
+import type { CollectionEntry } from "astro:content";
+import { getCollection } from "astro:content";
+
+import BlogCard from "@components/PortfolioCard.astro";
+import Layout from '@layouts/Layout.astro';
+import { getTaxonomyWithCounts } from "@src/utils/taxonomy";
+import { humanize, slugify } from "@src/utils/textConverter";
+
+export async function getStaticPaths() {
+  const allPosts: CollectionEntry<"portfolio">[] = await getCollection("portfolio");
+  const allAuthors: CollectionEntry<"author">[] = await getCollection("author");
+
+  const uniqueTags = [...new Set(allPosts.flatMap((post) => post.data.tags || []))];
+
+  return uniqueTags.map((tag) => {
+    const filteredPosts = allPosts
+      .filter((post) => post.data.tags?.includes(tag))
+      .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+
+    return {
+      params: { slug: slugify(tag) },
+      props: { posts: filteredPosts, allAuthors, tag },
+    };
+  });
+};
+
+const { posts, allAuthors, tag } = Astro.props;
+
+const allPosts: CollectionEntry<"portfolio">[] = await getCollection("portfolio");
+const {
+  allItems: allTags,
+  itemCounts: tagCounts 
+} = getTaxonomyWithCounts(allPosts, 'tags');
+
+// is link active
+const currentPath = Astro.url.pathname;
+const isActive = (link: string) => 
+  currentPath === link || currentPath === link + "/";
+---
+
+<Layout
+  meta_title={`Tag - ${tag}`}
+  description={""}
+  image={""}
+  author={""}
+  keywords={""}
+  noindex={false}
+  canonical={""}
+>
+  <section class="pt-12 lg:pt-16">
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-12 text-center pb-10 sm:pb-14">
+          <p class="mb-2 sm:mb-3">Showing posts from</p>
+          <h1 class="section-title !text-3xl md:!text-[2.2rem] lg:!text-[2.5rem] mb-0">
+            <span>{tag}</span>
+          </h1>
+        </div>
+
+        <div class="lg:col-10 mx-auto">
+          <ul id="tags" class="flex flex-wrap items-center justify-center gap-2 sm:gap-3">
+            {allTags.map((tag) => (
+              <li>
+                <a class={`group bg-white dark:bg-dark-dark rounded-lg text-sm sm:text-base px-3 sm:px-5 py-2 sm:py-[10px] flex items-center gap-x-2 font-medium transition-all duration-200 hover:bg-primary dark:hover:bg-primary-dark hover:text-white ${isActive(`/portfoliocategories/${slugify(tag)}`) && "dark:!bg-primary-dark !bg-primary text-white"}`} href={`/portfoliocategories/${slugify(tag)}`}>
+                  {humanize(tag)}
+                  {tagCounts[tag] > 1 && (
+                    <span class={`-mr-px sm:mr-0 bg-primary dark:bg-primary-dark text-white rounded-full group-hover:bg-white group-hover:text-primary dark:group-hover:text-primary-dark h-5 w-5 inline-grid place-content-center text-xs font-semibold transition-all duration-200 ${isActive(`/portfoliocategories/${slugify(tag)}`) && "!bg-white dark:!text-primary-dark !text-primary"}`}>{tagCounts[tag]}</span>
+                  )}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section-sm pb-0 bg-section">
+    <div class="container section-sm pb-0">
+      <div class="row gy-6 gx-1">
+        {posts.map((post) => (
+          <div class="md:col-6 lg:col-4">
+            <BlogCard post={post} allAuthors={allAuthors} variant="sm" />
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+</Layout>

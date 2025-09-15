@@ -1,0 +1,36 @@
+---
+import { humanize } from "@src/utils/textConverter";
+
+const currentPath = Astro.url.pathname;
+let pathSegments = currentPath.split('/').filter(segment => segment);
+
+const pageIndex = pathSegments.findIndex(segment => segment === 'page');
+if (pageIndex !== -1) {
+  pathSegments = pathSegments.slice(0, pageIndex);
+}
+
+const breadcrumbs = pathSegments.map((segment, index) => {
+  const url = '/' + pathSegments.slice(0, index + 1).join('/');
+  return { name: segment, url };
+});
+---
+
+<nav aria-label="Breadcrumb" class="my-6">
+  <ol class="flex justify-center flex-wrap gap-x-5 font-medium capitalize">
+    <li>
+      <a href="/" class="flex justify-center gap-x-1"
+        ><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M5 12H3l9-9 9 9h-2"></path><path d="M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"></path><path d="M9 21v-6a2 2 0 012-2h2a2 2 0 012 2v6"></path></svg>
+        <span class="hover:underline">Home</span>
+      </a>
+    </li>
+    {breadcrumbs.map((breadcrumb, index) => (
+      <li class={`relative before:content-['•'] before:text-black before:dark:text-white before:pr-[14px] ${index === breadcrumbs.length - 1 ? 'active' : ''}`} aria-current={index === breadcrumbs.length - 1 ? 'page' : undefined}>
+        {index === breadcrumbs.length - 1 ? (
+          humanize(breadcrumb.name)
+        ) : (
+          <a href={breadcrumb.url} class="hover:underline">{humanize(breadcrumb.name)}</a>
+        )}
+      </li>
+    ))}
+  </ol>
+</nav>

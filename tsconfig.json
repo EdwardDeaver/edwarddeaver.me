@@ -2,39 +2,23 @@
   "extends": "astro/tsconfigs/strict",
   "compilerOptions": {
     "baseUrl": ".",
-    "lib": [
-      "es2022",
-      "dom",
-      "dom.iterable"
-    ],
+    "target": "es6",
+    "allowJs": true,
+    "resolveJsonModule": true,
+    "noEmit": true,
+    "jsx": "react",
+    "isolatedModules": true,
+    "incremental": true,
+    "types": ["node"],
     "paths": {
-      "@/assets/*": [
-        "src/assets/*"
-      ],
-      "@/components/*": [
-        "src/components/*"
-      ],
-      "@/data/*": [
-        "src/data/*"
-      ],
-      "@/layouts/*": [
-        "src/layouts/*"
-      ],
-      "@/utils/*": [
-        "src/utils/*"
-      ],
-      "@/types": [
-        "src/types.ts"
-      ],
-      "@/site-config": [
-        "src/site.config.ts"
-      ]
+      "@components/*": ["src/components/*"],
+      "@layouts/*": ["src/layouts/*"],
+      "@styles/*": ["src/styles/*"],
+      "@config/*": ["src/config/*"],
+      "@libs/*": ["src/libs/*"],
+      "@src/*": ["src/*"]
     }
   },
-  "exclude": [
-    "node_modules",
-    "**/node_modules/*",
-    ".vscode",
-    "dist"
-  ]
+  "include": ["**/*.ts", "**/*.tsx", "**/*.jsx", "**/*.astro", "src/pages/rss.xml.js"],
+  "exclude": ["node_modules"]
 }

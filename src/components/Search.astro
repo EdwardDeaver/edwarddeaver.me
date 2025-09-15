@@ -1,204 +1,71 @@
 ---
-// Heavy inspiration taken from Astro Starlight -> https://github.com/withastro/starlight/blob/main/packages/starlight/components/Search.astro
+import SearchComponent from "./SearchComponent.jsx";
 
-import "@pagefind/default-ui/css/ui.css";
+import type { CollectionEntry } from "astro:content";
+import { getCollection } from "astro:content";
+
+import { getTaxonomyWithCounts } from "@src/utils/taxonomy";
+import { humanize, slugify } from "@src/utils/textConverter";
+import AstroImage from "./helpers/AstroImage.astro";
+
+// all posts
+const allPosts: CollectionEntry<"blog">[] = (await getCollection("blog")).sort(
+  (a: CollectionEntry<"blog">, b: CollectionEntry<"blog">) =>
+    b.data.date.valueOf() - a.data.date.valueOf()
+);
+
+// all tags
+const {
+  allItems: allTags,
+  itemCounts: tagCounts 
+} = getTaxonomyWithCounts(allPosts, 'tags');
+
+// all categories
+const {
+  allItems: allCategories,
+  itemCounts: categoryCounts 
+} = getTaxonomyWithCounts(allPosts, 'categories');
+
+// is link active
+const currentPath = Astro.url.pathname;
+const isActive = (link: string) => 
+  currentPath === link || currentPath === link + "/";
 ---
 
-<site-search class="ms-auto" id="search">
-	<button
-		class="flex h-9 w-9 items-center justify-center rounded-md ring-zinc-400 transition-all hover:ring-2"
-		data-open-modal
-		disabled
-	>
-		<svg
-			aria-label="search"
-			class="h-7 w-7"
-			fill="none"
-			height="16"
-			stroke="currentColor"
-			stroke-linecap="round"
-			stroke-linejoin="round"
-			stroke-width="1.5"
-			viewBox="0 0 24 24"
-			width="16"
-			xmlns="http://www.w3.org/2000/svg"
-		>
-			<path d="M0 0h24v24H0z" stroke="none"></path>
-			<path d="M3 10a7 7 0 1 0 14 0 7 7 0 1 0-14 0M21 21l-6-6"></path>
-		</svg>
-	</button>
-	<dialog
-		aria-label="search"
-		class="h-full max-h-full w-full max-w-full border border-zinc-400 bg-bgColor shadow backdrop:backdrop-blur sm:mx-auto sm:mb-auto sm:mt-16 sm:h-max sm:max-h-[calc(100%-8rem)] sm:min-h-[15rem] sm:w-5/6 sm:max-w-[48rem] sm:rounded-md"
-	>
-		<div class="dialog-frame flex flex-col gap-4 p-6 pt-12 sm:pt-6">
-			<button
-				class="ms-auto cursor-pointer rounded-md bg-zinc-200 p-2 font-semibold dark:bg-zinc-700"
-				data-close-modal>Close</button
-			>
-			{
-				import.meta.env.DEV ? (
-					<div class="mx-auto text-center">
-						<p>
-							Search is only available in production builds. <br />
-							Try building and previewing the site to test it out locally.
-						</p>
-					</div>
-				) : (
-					<div class="search-container">
-						<div id="cactus__search" />
-					</div>
-				)
-			}
-		</div>
-	</dialog>
-</site-search>
+<div id="search-block" class="search-block">
+  <div class="container">
+    <SearchComponent client:load posts={allPosts}>
+      {allPosts.map((post) => (
+        <AstroImage src={post.data.image} alt={post.slug} width={190} height={98} format="webp" />
+      ))}
+    </SearchComponent>
 
-<script>
-	class SiteSearch extends HTMLElement {
-		private closeBtn: HTMLButtonElement;
-		private dialog: HTMLDialogElement;
-		private dialogFrame: HTMLDivElement;
-		private openBtn: HTMLButtonElement;
+    <div class="max-w-3xl">
+      <p class="h4 mb-4">Explorer posts by categories</p>
+      <div class="flex flex-wrap items-center gap-2 sm:gap-3 [&_a]:bg-primary/10 [&_a]:dark:bg-black/20 [&_a]:text-dark [&_a]:dark:text-white [&_a]:font-medium [&_a]:px-[14px] [&_a]:py-[5px] [&_a]:text-[13px] [&_a]:sm:text-[15px] [&_a]:rounded-md [&_a]:transition-all [&_a:hover]:bg-primary [&_a:hover]:dark:bg-primary-dark [&_a:hover]:text-white">
+        {allCategories.map((category) => (
+          <a class={`group ${isActive(`/categories/${slugify(category)}`) && "!bg-primary dark:!bg-primary-dark !text-white"}`} href={`/categories/${slugify(category)}`}>
+            {humanize(category)}
+            {categoryCounts[category] > 1 && (
+              <span class={`-mr-px -translate-y-px bg-primary dark:bg-primary-dark text-white rounded-full group-hover:bg-white group-hover:text-primary group-hover:dark:text-primary-dark h-4 sm:h-5 w-4 sm:w-5 inline-grid place-content-center text-xs font-semibold transition-all duration-200 ${isActive(`/categories/${slugify(category)}`) && "!bg-white !text-primary dark:!text-primary-dark"}`}>{categoryCounts[category]}</span>
+            )}
+          </a>
+        ))}
+      </div>
+    </div>
 
-		closeModal = () => {
-			if (this.dialog.open) {
-				this.dialog.close();
-				window.removeEventListener("click", this.onWindowClick);
-			}
-		};
-
-		onWindowClick = (event: MouseEvent) => {
-			// check if it's a link
-			const isLink = "href" in (event.target || {});
-			// make sure the click is either a link or outside of the dialog
-			if (
-				isLink ||
-				(document.body.contains(event.target as Node) &&
-					!this.dialogFrame.contains(event.target as Node))
-			)
-				this.closeModal();
-		};
-
-		onWindowKeydown = (e: KeyboardEvent) => {
-			// check if it's the / key
-			if (e.key === "/" && !this.dialog.open) {
-				this.openModal();
-				e.preventDefault();
-			}
-		};
-
-		openModal = (event?: MouseEvent) => {
-			this.dialog.showModal();
-			this.querySelector("input")?.focus();
-			event?.stopPropagation();
-			window.addEventListener("click", this.onWindowClick);
-		};
-
-		constructor() {
-			super();
-			this.openBtn = this.querySelector<HTMLButtonElement>("button[data-open-modal]")!;
-			this.closeBtn = this.querySelector<HTMLButtonElement>("button[data-close-modal]")!;
-			this.dialog = this.querySelector("dialog")!;
-			this.dialogFrame = this.querySelector(".dialog-frame")!;
-
-			this.openBtn.addEventListener("click", this.openModal);
-			this.openBtn.disabled = false;
-			this.closeBtn.addEventListener("click", this.closeModal);
-		}
-
-		connectedCallback() {
-			// Listen for keyboard shortcut
-			window.addEventListener("keydown", this.onWindowKeydown);
-
-			// only add pagefind in production
-			if (import.meta.env.DEV) return;
-			const onIdle = window.requestIdleCallback || ((cb) => setTimeout(cb, 1));
-			onIdle(async () => {
-				const { PagefindUI } = await import("@pagefind/default-ui");
-				new PagefindUI({
-					baseUrl: import.meta.env.BASE_URL,
-					bundlePath: import.meta.env.BASE_URL.replace(/\/$/, "") + "/pagefind/",
-					element: "#cactus__search",
-					showImages: false,
-					showSubResults: true,
-				});
-			});
-		}
-
-		disconnectedCallback() {
-			window.removeEventListener("keydown", this.onWindowKeydown);
-		}
-	}
-
-	customElements.define("site-search", SiteSearch);
-</script>
-
-<style is:global>
-	:root {
-		--pagefind-ui-font: inherit;
-	}
-
-	#cactus__search .pagefind-ui__search-clear {
-		width: calc(60px * var(--pagefind-ui-scale));
-		padding: 0;
-		background-color: transparent;
-		overflow: hidden;
-	}
-	#cactus__search .pagefind-ui__search-clear:focus {
-		outline: 1px solid theme("colors.accent-2");
-	}
-	#cactus__search .pagefind-ui__search-clear::before {
-		content: "";
-		-webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke-width='1.5' stroke='currentColor' %3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M6 18L18 6M6 6l12 12'%3E%3C/path%3E%3C/svg%3E")
-			center / 60% no-repeat;
-		mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke-width='1.5' stroke='currentColor' %3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M6 18L18 6M6 6l12 12'%3E%3C/path%3E%3C/svg%3E")
-			center / 60% no-repeat;
-		background-color: theme("colors.accent");
-		display: block;
-		width: 100%;
-		height: 100%;
-	}
-
-	#cactus__search .pagefind-ui__result {
-		border: 0;
-	}
-
-	#cactus__search .pagefind-ui__result-link {
-		background-size: 100% 6px;
-		background-position: bottom;
-		background-repeat: repeat-x;
-		background-image: linear-gradient(
-			transparent,
-			transparent 5px,
-			theme("colors.textColor") 5px,
-			theme("colors.textColor")
-		);
-	}
-
-	#cactus__search .pagefind-ui__result-link:hover {
-		text-decoration: none;
-		background-image: linear-gradient(
-			transparent,
-			transparent 4px,
-			theme("colors.link") 4px,
-			theme("colors.link")
-		);
-	}
-
-	#cactus__search mark {
-		color: theme("colors.quote");
-		background-color: transparent;
-		font-weight: 600;
-	}
-</style>
-
-<style>
-	#cactus__search {
-		--pagefind-ui-primary: theme("colors.accent");
-		--pagefind-ui-text: theme("colors.textColor");
-		--pagefind-ui-background: theme("colors.bgColor");
-		--pagefind-ui-border: theme("colors.zinc.400");
-		--pagefind-ui-border-width: 1px;
-	}
-</style>
+    <div class="mt-10 max-w-3xl">
+      <p class="h4 mb-4">Explorer posts by tags</p>
+      <div class="flex flex-wrap items-center gap-2 sm:gap-3 [&_a]:bg-primary/10 [&_a]:dark:bg-black/20 [&_a]:text-dark [&_a]:dark:text-white [&_a]:font-medium [&_a]:px-[14px] [&_a]:py-[5px] [&_a]:text-[13px] [&_a]:sm:text-[15px] [&_a]:rounded-md [&_a]:transition-all [&_a:hover]:bg-primary [&_a:hover]:dark:bg-primary-dark [&_a:hover]:text-white">
+        {allTags.map((tag) => (
+          <a class={`group ${isActive(`/tags/${slugify(tag)}`) && "!bg-primary !text-white"}`} href={`/tags/${slugify(tag)}`}>
+            {humanize(tag)}
+            {tagCounts[tag] > 1 && (
+              <span class={`-mr-px -translate-y-px bg-primary dark:bg-primary-dark text-white rounded-full group-hover:bg-white group-hover:text-primary group-hover:dark:text-primary-dark h-4 sm:h-5 w-4 sm:w-5 inline-grid place-content-center text-xs font-semibold transition-all duration-200 ${isActive(`/tags/${slugify(tag)}`) && "!bg-white !text-primary dark:!text-primary-dark"}`}>{tagCounts[tag]}</span>
+            )}
+          </a>
+        ))}
+      </div>
+    </div>
+  </div>
+</div>

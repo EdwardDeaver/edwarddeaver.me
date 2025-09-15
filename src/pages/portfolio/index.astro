@@ -1,0 +1,53 @@
+---
+import { settings } from "@config/site.config.json";
+
+import BlogCard from "@components/PortfolioCard.astro";
+import PageHeader from "@components/PageHeader.astro";
+import Pagination from "@components/Pagination.astro";
+import Layout from '@layouts/Layout.astro';
+
+import type { CollectionEntry } from "astro:content";
+import { getCollection } from "astro:content";
+
+const allPosts: CollectionEntry<"portfolio">[] = (await getCollection("portfolio")).sort(
+  (a: CollectionEntry<"portfolio">, b: CollectionEntry<"portfolio">) =>
+    b.data.date.valueOf() - a.data.date.valueOf()
+);
+
+const allAuthors: CollectionEntry<"author">[] = await getCollection("author");
+
+const postsPerPage: number = settings?.pagination;
+const totalPages: number = Math.ceil(allPosts.length / postsPerPage);
+---
+
+<Layout
+  title={"Example All posts"}
+  meta_title={""}
+  description={""}
+  image={""}
+  author={""}
+  keywords={""}
+  noindex={false}
+  canonical={""}
+>
+
+  <PageHeader title="All posts" />
+
+  <!-- START :: All posts -->
+  <section>
+    <div class="container">
+      <div class="row gy-6 gx-4">
+        {allPosts.slice(0, settings?.pagination || 6).map((post) => (
+          <div class="lg:col-6">
+            <BlogCard post={post} allAuthors={allAuthors} />
+          </div>
+        ))}
+
+        <div class="col-12">
+          <Pagination totalPages={totalPages} currentPage={1} section="portfolio" />
+        </div>
+      </div>
+    </div>
+  </section>
+  <!-- END :: All posts -->
+</Layout>

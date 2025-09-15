@@ -1,0 +1,17 @@
+<script is:inline define:vars={{ themeScript: `
+  const setTheme = () => {
+    const localStorageTheme = localStorage.getItem("theme");
+    const deviceIsDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+    if (localStorageTheme === "dark" || (!localStorageTheme && deviceIsDark)) {
+      document.documentElement.classList.add("dark");
+    }
+  }
+  
+  setTheme();
+  document.addEventListener('astro:page-load', () => { setTheme() });
+  document.addEventListener('astro:after-swap', () => { setTheme() });
+`}}>
+  const script = document.createElement('script');
+  script.textContent = themeScript;
+  document.head.appendChild(script);
+</script>

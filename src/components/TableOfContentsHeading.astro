@@ -1,0 +1,69 @@
+---
+const { heading } = Astro.props;
+---
+
+<li class="grid gap-2">
+  <a data-toc-link class="font-medium text-sm [&:is(.active)]:text-primary dark:[&:is(.active)]:text-primary-dark hover:underline line-clamp-2" href={'#' + heading.slug}>
+    {heading.text}
+  </a>
+  {
+    heading.subheadings.length > 0 && (
+      <ul class="grid gap-3 pl-4">
+        {heading.subheadings.map((subheading: []) => (
+          <Astro.self heading={subheading} />
+        ))}
+      </ul>
+    )
+  }
+</li>
+
+<script>
+  document.addEventListener('astro:page-load', () => {
+    const setCurrentHeading : IntersectionObserverCallback = (entries) => {
+      // loop to each entries (headings) in the page
+      for (let entry of entries) {
+        // equivalent to the slug returned from pageHeadings
+        const { id } = entry.target;
+        // get the TOC link's element for the current entry
+        const tocLinkEl = document.querySelector(`[data-toc-link][href='#${id}']`);
+        if(!tocLinkEl) return;
+
+        // check if the entry is intersecting
+        if (entry.isIntersecting) {
+          // remove active class from all links
+          document.querySelectorAll("[data-toc-link]").forEach((e) => e.classList.remove("active"));
+          // add active class to the currently active entry
+          tocLinkEl.classList.add("active");
+        }
+      }
+    }
+
+    const observerOptions = {
+      threshold: 1,
+      rootMargin : "0px 0px -55%"
+    }
+
+    const observer = new IntersectionObserver(setCurrentHeading, observerOptions); 
+    // select all headings to observe 
+    const elToObserve = document.querySelectorAll(".content :is(h2,h3,h4)")
+    // finally, observe the elements 
+    elToObserve.forEach(el => observer.observe(el));
+
+    const handleClick = (e: any, id: string) => {
+      e.preventDefault();
+      const element = document.getElementById(id);
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth' });
+      }
+    };
+    document.querySelectorAll('[data-toc-link]').forEach((link) => {
+      const href = link.getAttribute('href');
+      if (href) {
+        const targetId = href.substring(1);
+        link.addEventListener('click', (e) => handleClick(e, targetId));
+      }
+    });
+
+  });
+</script>
+  

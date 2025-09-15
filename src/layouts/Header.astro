@@ -1,0 +1,187 @@
+---
+import Search from "@components/Search.astro";
+import AstroImage from "@components/helpers/AstroImage.astro";
+import ThemeToggler from "@components/ThemeToggler.astro";
+import { logo } from "@config/site.config.json";
+import { mainMenu } from "@config/menus.json";
+
+// is link active
+const currentPath = Astro.url.pathname;
+const isActive = (link: string) => 
+  currentPath === link || currentPath === link + "/";
+
+const isDropdownActive = (submenu: any) => submenu.some((item: any) => isActive(item.link));
+---
+
+<header class="header">
+  <div class="container flex flex-wrap items-center justify-between mx-auto">
+    <a class="font-bold" href="/" title={logo.alt}>
+      <h2 class="max-w-full h-auto dark:hidden">{logo.alt}</h2>
+      <h2 class="max-w-full h-auto hidden dark:block">{logo.alt}</h2>
+    </a>
+
+    <div class="flex items-center lg:order-2 gap-x-2 lg:gap-x-0 lg:-mr-4">
+      <button
+        type="button"
+        class="search-open"
+        id="search-open"
+        aria-controls="search-block"
+        aria-expanded="false"
+        aria-label="Open search"
+      >
+        <span class="sr-only">Open search</span>
+        <svg stroke-width="2" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M15.5 15.5L19 19" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"></path><path d="M5 11C5 14.3137 7.68629 17 11 17C12.6597 17 14.1621 16.3261 15.2483 15.237C16.3308 14.1517 17 12.654 17 11C17 7.68629 14.3137 5 11 5C7.68629 5 5 7.68629 5 11Z" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+        <span>Search</span>
+      </button>
+
+      <button
+        type="button"
+        id="header-navbar-toggle"
+        class="group inline-flex p-[6px] items-center justify-center text-black dark:text-white rounded lg:hidden hover:bg-gray-100 focus:outline-none hover:bg-primary/10 hover:dark:bg-primary-dark/5 transition-background-color"
+        aria-controls="header-navbar"
+        aria-expanded="false"
+      >
+        <span class="sr-only">Open main menu</span>
+        <svg class="group-[.is-active]:scale-95 group-[.is-active]:opacity-0" xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M4 6h16"></path><path d="M4 12h16"></path><path d="M4 18h16"></path></svg>
+        <svg class="absolute scale-0 opacity-0 group-[.is-active]:scale-100 group-[.is-active]:opacity-100" xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M18 6 6 18"></path><path d="M6 6l12 12"></path></svg>
+      </button>
+
+      <ThemeToggler />
+    </div>
+
+    <nav id="header-navbar" class="header-navbar">
+      <ul class="gap-1 lg:gap-0 w-full lg:w-auto block lg:flex flex-col lg:flex-row mx-auto items-center max-h-[calc(100vh-5rem)] lg:max-h-none overflow-y-auto lg:overflow-y-visible">
+        {mainMenu.map((menu) => menu.submenu ? (
+          <li class={`nav-item dropdown ${isDropdownActive(menu.submenu) ? 'active' : ''}`}>
+            <span
+              class="nav-link dropdown-toggle"
+              role="button"
+              aria-expanded="false">{menu.name}
+            </span>
+            <div class="dropdown-menu">
+              <ul class="overflow-hidden lg:overflow-visible">
+                {menu.submenu?.map((submenu) => (
+                  <li><a 
+                    class={`dropdown-item ${isActive(submenu.link) ? 'active' : ''}`}
+                    href={submenu.link} 
+                    target={submenu.target ?? ''} 
+                    rel={submenu.rel ?? ''}
+                    aria-label={submenu.name}
+                  >
+                    {submenu.name}
+                  </a></li>
+                ))}
+              </ul>
+            </div>
+          </li>
+        ) : (
+          <li class={`nav-item ${isActive(menu.link) ? 'active' : ''}`}>
+            <a
+              class="nav-link"
+              href={menu.link}
+              target={menu.target ?? ''}
+              rel={menu.rel ?? ''}
+              aria-label={menu.name}
+            >
+              {menu.name}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<Search />
+
+<script>
+  document.addEventListener('astro:page-load', () => {
+    // Dropdown toggle
+    const dropdownToggle = document.querySelectorAll(".dropdown-toggle") as NodeListOf<HTMLElement>;
+    dropdownToggle?.forEach((el) => {
+      el.addEventListener("click", () => {
+        el.parentElement?.classList.toggle("is-visible");
+      });
+    });
+
+    // Header Navbar toggle
+    const headerNavbar = document.getElementById("header-navbar") as HTMLElement;
+    const headerNavbarToggle = document.getElementById("header-navbar-toggle") as HTMLElement;
+    
+    // Close all dropdown menu
+    const closeDropdown = () => {
+      !headerNavbar?.classList.contains("is-visible") && 
+        dropdownToggle?.forEach((el) => {
+          el.classList.remove("bg-primary/10");
+          el.parentElement?.classList.remove("is-visible");
+        });
+    };
+    
+    // Close menu
+    const closeMenu = () => {
+      headerNavbar?.classList.remove("is-visible");
+      headerNavbarToggle?.classList.remove("is-active");
+      closeDropdown();
+    };
+
+    // Open menu
+    const openMenu = () => {
+      headerNavbar?.classList.toggle("is-visible");
+      headerNavbarToggle?.classList.toggle("is-active");
+      closeDropdown();
+    };
+
+    headerNavbarToggle?.addEventListener("click", () => {
+      openMenu();
+    });
+
+    // Search toggle
+    const searchOpen = document.getElementById("search-open") as HTMLElement;
+    const searchClose = document.getElementById("search-close") as HTMLElement;
+    const searchBlock = document.getElementById("search-block") as HTMLElement;
+    searchOpen?.addEventListener("click", () => {
+      searchBlock?.classList.toggle("is-visible");
+      setTimeout(() => {
+        searchBlock?.querySelector("input")?.focus();
+      }, 100);
+      
+      closeMenu();
+    });
+    searchClose?.addEventListener("click", () => {
+      searchBlock?.classList.remove("is-visible");
+    });
+    document.addEventListener("click", (event: MouseEvent) => {
+      const target = event.target as HTMLElement;
+      if (!searchBlock?.contains(target) && !searchOpen?.contains(target)) {
+        searchBlock?.classList.remove("is-visible");
+      }
+    });
+
+
+    // Header sticky, pin, unpin
+    const header = document.querySelector("header");
+    let lastScrollPosition = window.scrollY;
+    const scrollAmount = 400;
+    lastScrollPosition > scrollAmount && header?.classList.add("header-sticky-top");
+
+    window.addEventListener("scroll", () => {
+      const currentScrollPosition = window.scrollY;
+
+      if (currentScrollPosition > lastScrollPosition) {
+        currentScrollPosition > scrollAmount && header?.classList.add("header-unpinned");
+      } else {
+        header?.classList.remove("header-unpinned");
+      }
+
+      if (currentScrollPosition > 0) {
+        header?.classList.add("header-sticky-top");
+        header?.classList.remove("header-pin");
+      } else {
+        header?.classList.remove("header-sticky-top");
+        header?.classList.add("header-pin");
+      }
+
+      lastScrollPosition = currentScrollPosition;
+    });
+  });
+</script>
