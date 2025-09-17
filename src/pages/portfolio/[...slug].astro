@@ -30,7 +30,7 @@ const { post, currentAuthor } = Astro.props;
 const { title, description, image, date, author, tags, categories } = post.data;
 const keywords = [...tags, ...categories].join(", ");
 const formattedDate = formatDate(date);
-const postSlug = "/blog/" + post.slug;
+const postSlug = "/portfolio/" + post.slug;
 const postReadingTime = readingTime(post.body);
 
 const { Content, headings } = await post.render();

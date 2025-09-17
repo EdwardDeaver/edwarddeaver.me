@@ -539,6 +539,7 @@ export type ConfigSettings = {
   homepage_post_count?: Maybe<Scalars['Float']['output']>;
   pagination?: Maybe<Scalars['Float']['output']>;
   copyright?: Maybe<Scalars['String']['output']>;
+  portfolio_post_page_amount?: Maybe<Scalars['Float']['output']>;
 };
 
 export type Config = Node & Document & {
@@ -597,6 +598,7 @@ export type ConfigSettingsFilter = {
   homepage_post_count?: InputMaybe<NumberFilter>;
   pagination?: InputMaybe<NumberFilter>;
   copyright?: InputMaybe<StringFilter>;
+  portfolio_post_page_amount?: InputMaybe<NumberFilter>;
 };
 
 export type ConfigFilter = {
@@ -1947,6 +1949,7 @@ export type ConfigMetadataMutation = {
 
 export type ConfigSettingsMutation = {
   homepage_post_count?: InputMaybe<Scalars['Float']['input']>;
+  portfolio_post_page_amount?: InputMaybe<Scalars['Float']['input']>;
   pagination?: InputMaybe<Scalars['Float']['input']>;
   copyright?: InputMaybe<Scalars['String']['input']>;
 };
@@ -2247,7 +2250,7 @@ export type PrivacyMutation = {
 
 export type MenusPartsFragment = { __typename: 'Menus', mainMenu?: Array<{ __typename: 'MenusMainMenu', name: string, link: string, target?: string | null, rel?: string | null, submenu?: Array<{ __typename: 'MenusMainMenuSubmenu', name: string, link: string, target?: string | null, rel?: string | null } | null> | null } | null> | null, footerMenu?: Array<{ __typename: 'MenusFooterMenu', name: string, link: string, target?: string | null, rel?: string | null } | null> | null };
 
-export type ConfigPartsFragment = { __typename: 'Config', baseURL?: string | null, favicon?: string | null, basePath?: string | null, trailingSlash?: boolean | null, logo?: { __typename: 'ConfigLogo', src?: string | null, src_light?: string | null, alt?: string | null, width?: number | null, height?: number | null } | null, metadata?: { __typename: 'ConfigMetadata', title?: string | null, description?: string | null, author?: string | null, keywords?: string | null, image?: string | null } | null, settings?: { __typename: 'ConfigSettings', homepage_post_count?: number | null, pagination?: number | null, copyright?: string | null } | null };
+export type ConfigPartsFragment = { __typename: 'Config', baseURL?: string | null, favicon?: string | null, basePath?: string | null, trailingSlash?: boolean | null, logo?: { __typename: 'ConfigLogo', src?: string | null, src_light?: string | null, alt?: string | null, width?: number | null, height?: number | null } | null, metadata?: { __typename: 'ConfigMetadata', title?: string | null, description?: string | null, author?: string | null, keywords?: string | null, image?: string | null } | null, settings?: { __typename: 'ConfigSettings', portfolio_post_page_amount?: number | null, homepage_post_count?: number | null, pagination?: number | null, copyright?: string | null } | null };
 
 export type SubscriptionPartsFragment = { __typename: 'Subscription', title?: string | null, mailChimpFormAction?: string | null, mailChimpFormName?: string | null, formPlaceholder?: string | null, formButtonLabel?: string | null };
 
@@ -2301,7 +2304,7 @@ export type ConfigQueryVariables = Exact<{
 }>;
 
 
-export type ConfigQuery = { __typename?: 'Query', config: { __typename: 'Config', id: string, baseURL?: string | null, favicon?: string | null, basePath?: string | null, trailingSlash?: boolean | null, _sys: { __typename?: 'SystemInfo', filename: string, basename: string, hasReferences?: boolean | null, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string }, logo?: { __typename: 'ConfigLogo', src?: string | null, src_light?: string | null, alt?: string | null, width?: number | null, height?: number | null } | null, metadata?: { __typename: 'ConfigMetadata', title?: string | null, description?: string | null, author?: string | null, keywords?: string | null, image?: string | null } | null, settings?: { __typename: 'ConfigSettings', homepage_post_count?: number | null, pagination?: number | null, copyright?: string | null } | null } };
+export type ConfigQuery = { __typename?: 'Query', config: { __typename: 'Config', id: string, baseURL?: string | null, favicon?: string | null, basePath?: string | null, trailingSlash?: boolean | null, _sys: { __typename?: 'SystemInfo', filename: string, basename: string, hasReferences?: boolean | null, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string }, logo?: { __typename: 'ConfigLogo', src?: string | null, src_light?: string | null, alt?: string | null, width?: number | null, height?: number | null } | null, metadata?: { __typename: 'ConfigMetadata', title?: string | null, description?: string | null, author?: string | null, keywords?: string | null, image?: string | null } | null, settings?: { __typename: 'ConfigSettings', portfolio_post_page_amount?: number | null, homepage_post_count?: number | null, pagination?: number | null, copyright?: string | null } | null } };
 
 export type ConfigConnectionQueryVariables = Exact<{
   before?: InputMaybe<Scalars['String']['input']>;
@@ -2313,7 +2316,7 @@ export type ConfigConnectionQueryVariables = Exact<{
 }>;
 
 
-export type ConfigConnectionQuery = { __typename?: 'Query', configConnection: { __typename?: 'ConfigConnection', totalCount: number, pageInfo: { __typename?: 'PageInfo', hasPreviousPage: boolean, hasNextPage: boolean, startCursor: string, endCursor: string }, edges?: Array<{ __typename?: 'ConfigConnectionEdges', cursor: string, node?: { __typename: 'Config', id: string, baseURL?: string | null, favicon?: string | null, basePath?: string | null, trailingSlash?: boolean | null, _sys: { __typename?: 'SystemInfo', filename: string, basename: string, hasReferences?: boolean | null, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string }, logo?: { __typename: 'ConfigLogo', src?: string | null, src_light?: string | null, alt?: string | null, width?: number | null, height?: number | null } | null, metadata?: { __typename: 'ConfigMetadata', title?: string | null, description?: string | null, author?: string | null, keywords?: string | null, image?: string | null } | null, settings?: { __typename: 'ConfigSettings', homepage_post_count?: number | null, pagination?: number | null, copyright?: string | null } | null } | null } | null> | null } };
+export type ConfigConnectionQuery = { __typename?: 'Query', configConnection: { __typename?: 'ConfigConnection', totalCount: number, pageInfo: { __typename?: 'PageInfo', hasPreviousPage: boolean, hasNextPage: boolean, startCursor: string, endCursor: string }, edges?: Array<{ __typename?: 'ConfigConnectionEdges', cursor: string, node?: { __typename: 'Config', id: string, baseURL?: string | null, favicon?: string | null, basePath?: string | null, trailingSlash?: boolean | null, _sys: { __typename?: 'SystemInfo', filename: string, basename: string, hasReferences?: boolean | null, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string }, logo?: { __typename: 'ConfigLogo', src?: string | null, src_light?: string | null, alt?: string | null, width?: number | null, height?: number | null } | null, metadata?: { __typename: 'ConfigMetadata', title?: string | null, description?: string | null, author?: string | null, keywords?: string | null, image?: string | null } | null, settings?: { __typename: 'ConfigSettings', portfolio_post_page_amount?: number | null, homepage_post_count?: number | null, pagination?: number | null, copyright?: string | null } | null } | null } | null> | null } };
 
 export type SubscriptionQueryVariables = Exact<{
   relativePath: Scalars['String']['input'];
@@ -2635,6 +2638,7 @@ export const ConfigPartsFragmentDoc = gql`
     homepage_post_count
     pagination
     copyright
+    portfolio_post_page_amount
   }
 }
     `;

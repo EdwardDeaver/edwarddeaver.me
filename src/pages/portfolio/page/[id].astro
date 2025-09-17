@@ -1,7 +1,7 @@
 ---
 import { settings } from "@config/site.config.json";
 
-import BlogCard from "@components/BlogCard.astro";
+import BlogCard from "@components/PortfolioCard.astro";
 import PageHeader from "@components/PageHeader.astro";
 import Pagination from "@components/Pagination.astro";
 import Layout from '@layouts/Layout.astro';
@@ -11,8 +11,8 @@ import { getCollection } from "astro:content";
 
 export async function getStaticPaths() {
   const allAuthors: CollectionEntry<"author">[] = await getCollection("author");
-  const allPosts: CollectionEntry<"blog">[] = (await getCollection("blog")).sort(
-    (a: CollectionEntry<"blog">, b: CollectionEntry<"blog">) =>
+  const allPosts: CollectionEntry<"portfolio">[] = (await getCollection("portfolio")).sort(
+    (a: CollectionEntry<"portfolio">, b: CollectionEntry<"portfolio">) =>
       b.data.date.valueOf() - a.data.date.valueOf()
   );
 
@@ -21,7 +21,7 @@ export async function getStaticPaths() {
 
   return Array.from({ length: totalPages }, (_, i) => {
     const currentPage = i + 1;
-    const currentPagesPost: CollectionEntry<"blog">[] = allPosts.slice(
+    const currentPagesPost: CollectionEntry<"portfolio">[] = allPosts.slice(
       (currentPage - 1) * postsPerPage, currentPage * postsPerPage
     );
 
@@ -35,7 +35,7 @@ export async function getStaticPaths() {
 const { currentPagesPost, allAuthors, totalPages, currentPage } = Astro.props;
 ---
 
-<Layout title={`Page ${currentPage} of ${totalPages} - Blog Posts`}>
+<Layout title={`Page ${currentPage} of ${totalPages} - Portfolio Posts`}>
 
   <PageHeader title="All posts" />
 

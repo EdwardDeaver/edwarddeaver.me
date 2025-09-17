@@ -1,0 +1,380 @@
+---
+date: 2023-01-31T05:00:00.000Z
+title: ' MIT Reality Hack 2023 Blog: Creating Amadeus (Days 2-4.5)'
+description: >-
+  MIT Reality Hack days 2, 3, and 4.5: the project hacking days. This dives deep
+  into software engineering, project management, Csound and friends.
+author: Edward Deaver
+categories:
+  - hackathon
+tags:
+  - mit-reality-hack
+  - xr
+  - boston
+image: assets/blog/IMG_3497--1-.png
+---
+
+The team on Friday. (Left to right: Me (Edward), Jacob, Whitt (in the headset), Yash, Dana.)
+
+This is a part of a series of blogs detailing my experience at MIT Reality Hack 2023. My team’s project can be found here, [https://edwarddeaver.me/portfolio/mit-reality-hack-2023/](https://edwarddeaver.me/portfolio/mit-reality-hack-2023/). This is a continuation of the Day 0 and 1 blog post. If you haven’t read that yet, I would encourage you to do so: [https://edwarddeaver.me/blog/mit-reality-hack-2023-blog-day-1/](https://edwarddeaver.me/blog/mit-reality-hack-2023-blog-day-1/).
+
+At the moment I’m writing it has been about 1 week 2 weeks  since the event and my memory is a little hazy. Lack of sleep and high stress (good stress in this case) take a bit more of a toll than they did when I was doing hackathons in high school, (shout out Hack Upstate). I’m using chats and photo dates as a guide for myself. This one will be a bit more technical and diving deep into certain topics.
+
+***
+
+## Friday, January 13th - Day 2
+
+Day 2 started bright and early at… 9 AM. We were all collectively dead from the night before.
+
+We got breakfast and started project managing what we were going to do, and breaking up tasks.
+
+<Vimeo id="793695641" />
+
+This was 10AM :)
+
+Initially, we discussed creating a [hand-based controller similar to Imogen Heap’s](https://mimugloves.com?ref=edwarddeaver.me), see this video by Reverb to learn more about them:
+
+<YouTube id="2jR2yi5XPqY" />
+
+To get started we split tasks up so we could all work asynchronously and come back together with our parts. Whitt would go for the [Singularity](https://github.com/VRatMIT/TheSingularity-Unity?ref=edwarddeaver.me) integration because he had the most Unity experience (this would have us meeting Lucas and [Aubrey](https://aubreysimonson.gitlab.io/page/?ref=edwarddeaver.me) - both mentors). Dana and I started testing our sensors and getting the code working for them. Yash was working on the mockup for the controller, and Jacob was working on Bluetooth on the ESP32 side. Dividing and conquering was interesting as a lot of us had overlapping skill sets.
+
+Here is a video discussing the idea:
+
+<Vimeo id="793696987" />
+
+Discussing the idea.
+
+Mock up of the tactile glove:
+
+<AstroImage src="assets/blog/IMG_3562.png" alt="  Mock-up of the glove." width={1200} height={1600} caption="  Mock-up of the glove." />
+
+I started with getting our ultrasonic distance sensor working with the ESP32, this took longer than predicted. luckily we had the ones with timing crystals on them, never get the ones without them your data will be very messy (learned on my [Bachelors capstone project](https://edwarddeaver.me/portfolio/computer-science-bachelors-capstone/)). For next time, and for planning a project with extreme time constraints, I would give X number of minutes per task, and if they don’t get completed in that time frame cut them. This would work well for non-core parts of a project like which sensors you get working because your physical design can be adapted to the hardware. This would keep a high degree of stress at the beginning but could relieve some at the end because your vision gets automatically scoped.
+
+<AstroImage src="assets/blog/pmt-gantt-chart.png" alt="  Basically a Gantt chart and a stop watch. (credit: https://www.zoho.com/projects/project-management-tools.html) " width={1124} height={599} caption="  Basically a Gantt chart and a stop watch. (credit: https://www.zoho.com/projects/project-management-tools.html) " />
+
+Early on this day I set up our [GitHub repository](https://github.com/EdwardDeaver/MITRealityHack2023?ref=edwarddeaver.me) and used branching to maintain our separate code bases. This normally works well, except that there were game engine files in it. The process for adding game files is very manual and requires an extensive .gitignore that Whitt provided. For game design, [Plastic SCM](https://www.plasticscm.com?ref=edwarddeaver.me) or [Perforce](https://www.perforce.com?ref=edwarddeaver.me) Version Control Systems are typically used. None of us had a license for those, so Git it was.
+
+<AstroImage src="assets/blog/Screenshot-2023-01-28-at-9.50.07-PM.png" alt="  Our GitHub branches" width={1600} height={393} caption="  Our GitHub branches" />
+
+### Software-defined vs firmware-defined data:
+
+Before diving into this let’s define those terms. Software in this instance will be any program running on our computers or Quest 2 device, generally running at the application layer ([OSI model layer 7](https://en.wikipedia.org/wiki/OSI_model?ref=edwarddeaver.me)).  Firmware is the code running on the ESP32 allowing it to interface with the hardware (OSI model layer 1 - Physical Layer).
+
+<AstroImage src="assets/blog/computer-network-osi-model-layers.png" alt="  OSI Model (Credit: https://www.geeksforgeeks.org/layers-of-osi-model/)" height={781} width={638} caption="  OSI Model (Credit: https://www.geeksforgeeks.org/layers-of-osi-model/)" />
+
+When getting sensors to work on the ESP32 or any microcontroller for that matter you’ll have digital vs analog inputs. The ESP32 has 18 Analog to Digital Converter pins with a 12-bit resolution, so a minimum of 0 to a maximum of 4096 (if you were using an Arduino Uno that max would be 1024 because it is an 8-bit device). So this means our potentiometer values would be in that 0-4096 range. Our ultrasonic would not be, it works by counting digital pulses. Our buttons would also not be as they operate as either high or low, 1 or 0. You have a choice in dealing with this data getting it raw and offloading it, doing some clean up and sending it, or producing finalized analysis on it ( lots if else statements to send discrete commands). These approaches all have trade offs: speed vs clean data, clean data vs flexibility of interpretation of that data, speed vs system responsiveness (remember you only have 2 cores - even with an [RTOS](https://en.wikipedia.org/wiki/Real-time_operating_system?ref=edwarddeaver.me) you'll have trade offs).
+
+Initially, we discussed the actual values that the ESP32 would send out to address this. You can do processing on the device itself but then you eventually can run into constraints of processing speed and we are working with a system that needs to be responsive as possible so the hardware should be dumb and just offload data quickly. I pushed for going for a software-defined route for our data instead of interpreting it on the ESP32 to give us more flexibility. This can be compared to [MIDI](https://en.wikipedia.org/wiki/MIDI?ref=edwarddeaver.me) controllers controlling a software synth. The controller is just sending its raw values over predefined protocol standard and then you are left to deal with it in software.
+
+<AstroImage src="assets/blog/doc-esp32-pinout-reference-wroom-devkit.png" alt="  ESP32-WROOM-32 pinout." width={1384} height={675} caption="  ESP32-WROOM-32 pinout." />
+
+Let’s pop out of hardware land and jump to Bluetooth land in Unity:
+
+### Bluetooth:
+
+This is where we would come to meet Aubrey and Lucas (I'm trying to link new people in the story as we go along but I might forget).  I wasn't very involved with getting Singularity up and running, I just knew it took a long time. According to Whitt, "So with the singularity it was supposed to be pretty simple and the delay was from not being able to see why it wasn't working. It was a bit of blind testing but we ended getting it to work by ignoring their instructions on making a custom script with their library and just modified a script they supplied on a prefab that came with the package"
+
+<Vimeo id="793547344" />
+
+An ESP32 was sending Bluetooth data, and Whitt and Lucas were debugging it. 7 pm Friday night.
+
+Jacob and I (briefly) worked on finding a data format, and settled on [Arduino JSON](https://arduinojson.org?ref=edwarddeaver.me). A library that allows you to easily create JSON formatted data. I was able to point out a nested for loop would cause a poor performance, which I was pretty proud I was able to remember[ Big O](https://www.khanacademy.org/computing/computer-science/algorithms/asymptotic-notation/a/big-o-notation?ref=edwarddeaver.me).
+
+A test ESP32 would be kept around to send to send data to the Quest. Also, Bluetooth interference would start to become an issue.
+
+###
+
+### Sound Synthesis (Csound):
+
+How do you make noise in Unity? I didn't know so I asked "Can Unity generate audio or would a tool like [PureData](https://puredata.info?ref=edwarddeaver.me)/[MaxMSP](https://cycling74.com/products/max?ref=edwarddeaver.me)/[VCV Rack](https://vcvrack.com?ref=edwarddeaver.me) be better?" to the Reality Hack Discord. Thank you to [Russell](https://www.linkedin.com/in/russellsng/?ref=edwarddeaver.me), [Antonia](https://www.linkedin.com/in/antonia-forster/?ref=edwarddeaver.me), Aubrey and [Yiqi](https://www.linkedin.com/in/vanyiqi/?ref=edwarddeaver.me) for helping me out. Big ups to Aubrey for suggesting [Csound](https://csound.com?ref=edwarddeaver.me) and [Csound for Unity ](https://github.com/rorywalsh/CsoundUnity?ref=edwarddeaver.me)([here are some sketches of it](https://github.com/CsoundUnityBerklee/CsoundUnitySketches?ref=edwarddeaver.me)).
+
+Csound is so interesting. It's a real time synthesis library that was made at MIT Media Lab in the 1980s by [Barry Vercoe](https://en.wikipedia.org/wiki/Barry_Vercoe?ref=edwarddeaver.me). The history of Csound is fascinating and how it flowed into other tools like PureData and MaxMSP. If you have a few minutes dive into the [Wikipedia page for it](https://en.wikipedia.org/wiki/Csound?ref=edwarddeaver.me).
+
+This is what a [Theremin](https://www.youtube.com/watch?v=LYSGTkNtazo\&ref=edwarddeaver.me) instrument is in Csound:
+
+```cpp
+<Cabbage> bounds(0, 0, 0, 0)
+form caption("Theremin") size(700, 300), guiMode("queue"), pluginId("thm1")
+rslider    bounds(  0, 40, 80, 80), valueTextBox(1), textBox(1), text("Att."), channel("Attack"),  range(0,  5, 0.15)
+rslider    bounds(100, 40, 80, 80), valueTextBox(1), textBox(1), text("Gain"), channel("Gain"),  range(0,  1, 0.65)
+rslider    bounds(200, 40, 80, 80), valueTextBox(1), textBox(1), text("Glide"), channel("Glide"),  range(0,  1, 0.15)
+rslider    bounds(300, 40, 80, 80), valueTextBox(1), textBox(1), text("Lfo Freq"), channel("Lfo"),  range(0,  100, 7)
+rslider    bounds(300, 40, 80, 80), valueTextBox(1), textBox(1), text("Lfo Amp"), channel("LfoAmp"),  range(0,  100, 8.5)
+rslider    bounds(400, 40, 80, 80), valueTextBox(1), textBox(1), text("Filter Freq"), channel("FiltFreq"),  range(100,  5000, 1000)
+rslider    bounds(500, 40, 80, 80), valueTextBox(1), textBox(1), text("Filter Res"), channel("FiltRes"),  range(0,  0.95, .066)
+rslider    bounds(600, 40, 80, 80), valueTextBox(1), textBox(1), text("Table"), channel("Table"),  range(0,  3.99, 1.5)
+</Cabbage>
+<CsoundSynthesizer>
+<CsOptions>
+-n -d 
+</CsOptions>
+<CsInstruments>
+sr = 48000
+ksmps = 64
+nchnls = 2
+0dbfs = 1
+
+chn_k "Frequency", 1
+chn_k "Amplitude", 1 
+
+;courtesy Iain McCurdy
+opcode    lineto2,k,kk
+ kinput,ktime    xin
+ ktrig    changed    kinput,ktime    ; reset trigger
+ if ktrig==1 then                    ; if new note has been received or if portamento time has been changed...
+  reinit RESTART
+ endif
+ RESTART:                            ; restart 'linseg' envelope
+ if i(ktime)==0 then                 ; 'linseg' fails if duration is zero...
+  koutput    =    i(kinput)          ; ...in which case output simply equals input
+ else
+  koutput    linseg    i(koutput),i(ktime),i(kinput)    ; linseg envelope from old value to new value
+ endif
+ rireturn
+         xout    koutput
+endop
+
+
+instr 1
+
+kat chnget "Attack"
+kport chnget "Glide"
+kfreq chnget "Frequency"
+kamp chnget "Amplitude"
+klfo chnget "Lfo"
+klfoamp chnget "LfoAmp"
+kfiltf chnget "FiltFreq"
+kfiltres chnget "FiltRes"
+kgain chnget "Gain"
+ktable chnget "Table"
+kPortTime linseg  0, 0.001, 1
+kEnvTime linseg 0, 0.001, 1
+
+kcps     lineto2    kfreq, kPortTime * kport    
+kenv     lineto2    kamp, kEnvTime * kat 
+kff      lineto2    kfiltf, 0.01
+kfr      lineto2    kfiltres, 0.01
+
+alfo lfo klfoamp, klfo, 0
+ftmorf ktable, 99, 100
+aosc oscili kenv, kcps + alfo, 100
+aout moogladder aosc, kff, kfr
+
+; left right output
+outs aout*kgain, aout*kgain
+endin
+
+</CsInstruments>
+<CsScore>
+;causes Csound to run for about 7000 years...
+f0 3600
+f1 0 16384 10 1                                          ; Sine
+f2 0 16384 10 1 0.5 0.3 0.25 0.2 0.167 0.14 0.125 .111   ; Sawtooth
+f3 0 16384 10 1 0   0.3 0    0.2 0     0.14 0     .111   ; Square
+f4 0 16384 10 1 1   1   1    0.7 0.5   0.3  0.1          ; Pulse
+f5 0 16384 10 1 0.3 0.05 0.1 0.01                        ; Custom
+f99  0 5 -2 1 2 3 4 5                                    ; the table that contains the numbers of tables used by ftmorf
+f100 0 16384 10 1                                        ; the table that will be written by ftmorf
+i1 0 3600
+</CsScore>
+</CsoundSynthesizer>
+```
+
+If you are interested in this stuff but also want to go lower check out the [Electro Smith Daisy platform](https://www.electro-smith.com/daisy/daisy?ref=edwarddeaver.me). From talking to their community on Discord a lot of the Csound ideas are implemented into the core library.
+
+This is a demo of me controlling the synth in C#:
+
+<Vimeo id="793692233" />
+
+Video of theremin in Unity.
+
+Code from above:
+
+```csharp
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+namespace Csound.TableMorph.Theremin
+{
+
+ 
+    [RequireComponent(typeof(CsoundUnity))]
+public class theraminSynth : MonoBehaviour    {
+       public  float frequencyField = 60.0F;
+       public  float amplitudeField = 1.0F;
+        public  float gainField = 1.0F;
+        public  float lfoField = 100F;
+        public  float tableField = 3.99F;
+
+
+
+        [SerializeField] Vector2 _freqRange = new Vector2(700, 800);
+        CsoundUnity _csound;
+
+
+
+        IEnumerator Start()
+        {
+            _csound = GetComponent<CsoundUnity>();
+            while (!_csound.IsInitialized)
+                yield return null;
+
+            _csound.SetChannel("Frequency", frequencyField);
+            _csound.SetChannel("Amplitude", amplitudeField);
+            _csound.SetChannel("Gain", gainField);
+            _csound.SetChannel("Lfo", lfoField);
+            _csound.SetChannel("Table", tableField);
+
+        }
+
+        void Update()
+        {
+            if (!_csound.IsInitialized)
+                return;
+
+            _csound.SetChannel("Frequency", frequencyField);
+            _csound.SetChannel("Amplitude", amplitudeField);
+            _csound.SetChannel("Gain", gainField);
+            _csound.SetChannel("Lfo", lfoField);
+            _csound.SetChannel("Table", tableField);
+
+
+
+        }
+
+
+        // When pressed in JSON call this and play (button 0 pressed)
+        // playNote(1.0)
+        // Perfect fifth
+
+        // amplitudeField should be 0 - 1f) 
+        public void setAmplitude(float Amplitude){
+            _csound.SetChannel("Amplitude", amplitudeField);
+        }  
+        public void setFrequency(float Frequency){
+            _csound.SetChannel("Frequency", Frequency);
+        }     
+        // position - button position on  fret board 0 at top 
+
+        public void playNote(float position){
+            _csound.SetChannel("Frequency", frequencyField * (position * 1.5));
+        }
+        public void changeLFO(float lfoVariable){
+            _csound.SetChannel("Lfo", lfoVariable);
+        }
+    }
+}
+```
+
+## People:
+
+During the day we met Jim (mentor) who loved our idea and gave us math lessons on music theory. It was awesome! Stoked off that. He talked to us about circuit bending, guess what he brought on Saturday? The Guitar Hero controller also a [Bop It ](https://en.wikipedia.org/wiki/Bop_It?ref=edwarddeaver.me)and other toys.
+
+Also talked to the other teams around us like [Hong](https://www.linkedin.com/in/studiohuahong/?ref=edwarddeaver.me) and others (these are the parts that have blurred together).
+
+<AstroImage src="assets/blog/IMG_3497--1-.png" alt="Left to right: Me (Edward), Jacob, Whitt (in the headset), Yash, Dana." width={1500} height={1125} caption="Left to right: Me (Edward), Jacob, Whitt (in the headset), Yash, Dana." />
+
+### Night time:
+
+There was a nice social.
+
+<Vimeo id="793694481" />
+
+Walking back the hotel I saw this sticker that said Lorem Ipsum (trust me, that's what this blurry photo says). This is the nerdiest sticker I've ever seen.
+
+<AstroImage src="assets/blog/IMG_3509--3-.png" alt="  Lorum ipsum sticker" width={865} height={1153} caption="  Lorum ipsum sticker" />
+
+## Saturday, January 14th - Day 3
+
+Wow, that was just Friday, I got tired even writing that.
+
+Good morning...On the walk through the park I saw this. I don't know what sport this is but I've never seen one of these in a park before. It kinda looks like the sport featured in The Road to El Dorado (2000) [pok-ta-pok](https://naatikmexico.org/blog/pok-ta-pok-the-maya-ball-game?ref=edwarddeaver.me). Someone mentioned in the Discord it might be Quidditch ... maybe ¯\\\_(ツ)\_/¯ . Even in the [Cambridge PDF of parks ](https://www.cambridgema.gov/-/media/Files/CDD/ParksandOpenSpace/parksguide/ParksGuide_FINAL_20200717.pdf?ref=edwarddeaver.me)it's not mentioned. Is it like a very space efficient basketball hoop? Why is there a [key](https://en.wikipedia.org/wiki/Key_\(basketball\)?ref=edwarddeaver.me) on the ground behind it?
+
+<AstroImage src="assets/blog/IMG_3511.jpeg" alt="Donut shaped metal circle on metal pole." caption="Donut shaped metal circle on metal pole." width={1500} height={1125} />
+
+Check out this demolition:
+
+<Vimeo id="793720083" />
+
+Today Jim came with the toys and in his Santa bag of gifts was a Guitar Hero controller. Upon seeing it we scrapped the glove idea and went into re-using the the controller, and participated in the [Circular Economy.](https://ellenmacarthurfoundation.org/topics/circular-economy-introduction/overview?ref=edwarddeaver.me)
+
+<AstroImage src="assets/blog/IMG_3530.jpeg" width={1600} height={2133} alt="  Internals of a guitar hero controller. Much simpler than modern electronics. " caption="  Internals of a guitar hero controller. Much simpler than modern electronics. " />
+
+Internals of a guitar hero controller. Much simpler than modern electronics.
+
+Dana continued on working on sensors, Jacob worked on getting Unity parsing the ESP32 content, Whitt worked on the VFX graph for particles, and I worked on Csound more.
+
+At some point we went for a walk:
+
+<div class="gallery">
+  <AstroImage src="/assets/blog/IMG_3518.jpeg" alt="MIT and Boston" width={970} height={500} />
+
+  <AstroImage src="/assets/blog/IMG_3519.jpeg" alt="MIT and Boston" width={970} height={500} />
+
+  <AstroImage src="/assets/blog/IMG_3520.jpeg" alt="MIT and Boston" width={970} height={500} />
+
+  <AstroImage src="/assets/blog/IMG_3521.jpeg" alt="MIT and Boston" width={970} height={500} />
+
+  <AstroImage src="/assets/blog/IMG_3522.jpeg" alt="MIT and Boston" width={970} height={500} />
+
+  <AstroImage src="/assets/blog/IMG_3523.jpeg" alt="MIT and Boston" width={970} height={500} />
+
+  <AstroImage src="/assets/blog/IMG_3524.jpeg" alt="MIT and Boston" width={970} height={500} />
+
+  <AstroImage src="/assets/blog/IMG_3527.jpeg" alt="MIT and Boston" width={970} height={500} />
+</div>
+
+You can see Boston across the river, MIT, MIT and then me.
+
+Thank you to Aubrey for the MIT history: this signature in lights, "The End of Signature, Agnieszka Kurant used artificial intelligence to create two different collective signatures realized as monumental light sculptures adorning the facades of two new buildings in Kendall Square" [(learn more](https://listart.mit.edu/art-artists/end-signature-2021-2022?ref=edwarddeaver.me)):
+
+<AstroImage src="assets/blog/IMG_3528-1.jpeg" width={1600} height={1200} alt="  Photo of the signature ^ " caption="  Photo of the signature ^ " />
+
+The afternoon turned into [integration hell,](https://innoroo.com/blog/2018/03/19/integration-hell-glossary/?ref=edwarddeaver.me) trying to merge my project into Whitt's, and Jacob's into Whitt's. Also, Yash and Dana had the task of switching from hand glove hardware and sensors to repurposing the guitar.
+
+Csound note: If you don't hear audio in the headset, make sure you are compiling for ARM64/ARM7 not just ARM7, that was an hour of panic wondering if Csound was compatible.
+
+I want to pause here and say without our mentors and friends we could not have completed this project: Thank you to Jim Sussino (Mentor), Riley Simone, Greg (Mentor, XR Terra), Aubrey Simonson (Mentor), Lucas (Mentor) and Chris Smoak. Seriously, without their help we couldn't have done it.
+
+This is a short video showing Dana and Jacob talking about JSON in Unity:
+
+<Vimeo id="793723809" />
+
+This is a short video showing Dana and Jacob talking about JSON over Bluetooth in Unity.
+
+Integrating my code with Whitt's:
+
+<AstroImage src="assets/blog/IMG_3535.jpeg" alt="Edward and Whitt integrating Csound code. " width={1600} height={1200} caption="  Edward and Whitt integrating Csound code. " />
+
+## Saturday, January 14th - Day 4:
+
+T-12 hours till judging. Feeling like a train on fire (thanks to stable diffusion for making that).
+
+<AstroImage src="assets/blog/trainonfirestablediffusion.jpeg" width={512} height={512} alt="Burning train car going fast on the tracks. " caption="Burning train car going fast on the tracks. " />
+
+Wore the MIT Reality Hack shirt for the final day / judging.
+
+<div class="gallery">
+  <AstroImage src="/assets/blog/cropped-selfie.webp" alt="me" width={970} height={500} />
+
+  <AstroImage src="/assets/blog/cropped-back-selfie.webp" alt="back" width={970} height={500} />
+</div>
+
+Today was a race against the clock.
+
+Whitt would eventually hardcode the device name into it to bypass the UI breaking.
+
+When my part was done, I started work on our DevPost and compiling video for the video. Dana wrote the voice over, and I recorded it and edited it. That was fun to crank out a video in a hour.
+
+<YouTube id="es4Zc46btho" />
+
+It working:
+
+<YouTube id="EnQNOCDVHaA" />
+
+Final thoughts: my team was simply amazing.
+
+The next post will be the last in this series talking about the judging process and the public expo (lots of photos for both).
+
+<AstroImage src="assets/blog/IMG_3553--1-.jpeg" alt="  Check out this bunny Dana made from duct tape!" width={1600} height={1200} caption="  Check out this bunny Dana made from duct tape!" />

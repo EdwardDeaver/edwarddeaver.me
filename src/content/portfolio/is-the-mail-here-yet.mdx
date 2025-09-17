@@ -1,0 +1,33 @@
+---
+date: 2020-10-01T04:00:00.000Z
+title: Is The Mail Here Yet?
+description: >-
+  For Hack Upstate 2020 hackathon, I made a tool that emailed me when my webcam
+  detected a Fedex or UPS truck, so I wouldn't miss package deliveries. Won 2nd
+  place.
+author: Edward Deaver
+categories:
+  - Computer Vision
+tags:
+  - opencv
+  - hackathon
+  - python
+image: assets/blog/AdobeStock_591168933_Preview_Editorial_Use_Only.png
+---
+
+For Hack Upstate 2020 hackathon, I made a tool that emailed me when my webcam detected a Fedex or UPS truck, so I wouldn't miss package deliveries. Won 2nd place.
+
+<Vimeo id="867673470" />
+
+For my Hack Upstate 2020 submission (a 24 hour hackathon), I created a tool that emailed me when a Fedex or UPS truck was detected from my webcam. The goal was to not miss when a mail truck delivered a package. I received 2nd place.
+
+It utilized [Google's Teachable Machine](https://teachablemachine.withgoogle.com/?ref=edwarddeaver.me) to train the model and TensorFlow/OpenCV to detect the trucks.
+
+Some challenges I ran into were:
+
+*     CUDA version support on my OS vs TensorFlow.
+*     Trying to ingest an RTMP stream via a Wyze camera resulted in random crashes from inconsistent stream. The RTMP support for Wyze was in beta at the time.
+
+If you are interested the Github repository can be found here: [https://github.com/EdwardDeaver/HackUpstate2020.](https://github.com/EdwardDeaver/HackUpstate2020)
+
+If you are interested in the DevPost link, that can be found here: [https://devpost.com/software/is-the-mail-here-yet](https://devpost.com/software/is-the-mail-here-yet).

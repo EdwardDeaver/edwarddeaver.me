@@ -16,8 +16,9 @@ const allPosts: CollectionEntry<"portfolio">[] = (await getCollection("portfolio
 
 const allAuthors: CollectionEntry<"author">[] = await getCollection("author");
 
-const postsPerPage: number = settings?.pagination;
-const totalPages: number = Math.ceil(allPosts.length / postsPerPage);
+const postsPerPage: number = settings?.portfolio_post_page_amount;
+// const totalPages: number = Math.ceil(allPosts.length / postsPerPage);
+const totalPages: number = 1;
 ---
 
 <Layout
@@ -37,7 +38,7 @@ const totalPages: number = Math.ceil(allPosts.length / postsPerPage);
   <section>
     <div class="container">
       <div class="row gy-6 gx-4">
-        {allPosts.slice(0, settings?.pagination || 6).map((post) => (
+        {allPosts.map((post) => (
           <div class="lg:col-6">
             <BlogCard post={post} allAuthors={allAuthors} />
           </div>

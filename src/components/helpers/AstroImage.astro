@@ -65,7 +65,7 @@ const normalizedSrc = normalizeSrcPath(src);
 // Validate image path
 if (!images[normalizedSrc]) {
   throw new Error(
-    `Image "${normalizedSrc}" does not exist in: "/src/assets/**/*.{jpeg,jpg,png,gif,svg}"`
+    `Image "${normalizedSrc}" does not exist in: "/src/assets/**/*.{jpeg,jpg,png,gif,svg,webp}"`
   );
 }
 

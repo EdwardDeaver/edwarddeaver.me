@@ -51,39 +51,16 @@ const isDropdownActive = (submenu: any) => submenu.some((item: any) => isActive(
 
     <nav id="header-navbar" class="header-navbar">
       <ul class="gap-1 lg:gap-0 w-full lg:w-auto block lg:flex flex-col lg:flex-row mx-auto items-center max-h-[calc(100vh-5rem)] lg:max-h-none overflow-y-auto lg:overflow-y-visible">
-        {mainMenu.map((menu) => menu.submenu ? (
-          <li class={`nav-item dropdown ${isDropdownActive(menu.submenu) ? 'active' : ''}`}>
-            <span
-              class="nav-link dropdown-toggle"
-              role="button"
-              aria-expanded="false">{menu.name}
-            </span>
-            <div class="dropdown-menu">
-              <ul class="overflow-hidden lg:overflow-visible">
-                {menu.submenu?.map((submenu) => (
-                  <li><a 
-                    class={`dropdown-item ${isActive(submenu.link) ? 'active' : ''}`}
-                    href={submenu.link} 
-                    target={submenu.target ?? ''} 
-                    rel={submenu.rel ?? ''}
-                    aria-label={submenu.name}
-                  >
-                    {submenu.name}
-                  </a></li>
-                ))}
-              </ul>
-            </div>
-          </li>
-        ) : (
-          <li class={`nav-item ${isActive(menu.link) ? 'active' : ''}`}>
+        {mainMenu.map((menu?) =>  (
+          <li class={`nav-item ${isActive(menu!.link) ? 'active' : ''}`}>
             <a
               class="nav-link"
-              href={menu.link}
-              target={menu.target ?? ''}
-              rel={menu.rel ?? ''}
-              aria-label={menu.name}
+              href={menu!.link}
+              target={menu!.target ?? ''}
+              rel={menu!.rel ?? ''}
+              aria-label={menu!.name}
             >
-              {menu.name}
+              {menu!.name}
             </a>
           </li>
         ))}

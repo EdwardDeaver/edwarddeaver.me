@@ -1,0 +1,44 @@
+---
+date: 2020-10-01T04:00:00.000Z
+title: Control My Lights
+description: >-
+  An interactive light installation in my home controlled a website, Twitch
+  chat, YouTube chat. This was streamed over 3 weeks, and had 220 individual
+  active users (those that sent a command), and 2093 Twitch live views (310 via
+  Twitch and 895 from external sources).
+author: Edward Deaver
+categories:
+  - interactive
+tags:
+  - openFrameworks
+  - Processing
+  - Arduino
+  - NodeJS
+image: assets/blog/frame2.jpg
+---
+
+An interactive light installation in my home controlled a website, Twitch chat, YouTube chat. This was streamed over 3 weeks, and had 220 individual active users (those that sent a command), and 2093 Twitch live views (310 via Twitch and 895 from external sources).
+
+<Vimeo id="783520370" />
+
+[Code can be found here. ](https://github.com/EdwardDeaver/ControlMyLights?ref=edwarddeaver.me)
+
+Note: YouTube chat related code not published. 
+
+Description: During the Summer of 2020, I launched controlmylights.net, an interactive light exhibit powered by a complex construction of NodeJS streaming data, Python, Redis, MongoDB, openFrameworks, ReactJS and Arduino controlling DIY LED tube lights. Chat data was gathered via Twitch’s API, and a Selenium scraping program for YouTube’s chat. It used Redis for an internal queue and pub/sub, as well as a MongoDB (NoSQL) database to store color commands. The program was architected using a Message Oriented Middleware paradigm with Node.JS as the main language. I created a website with buttons for every color that the light application supported using ReactJS and originally designed it in Figma. That project raised funds for Feeding America with several active users and over 2,000 Twitch views.
+
+### This was controlmylights.net:
+
+<video controls>
+  <source src="/media/controlmylightnet.mp4" type="video/mp4" />
+
+  Your browser does not support the video tag.
+</video>
+
+### This was the end: 
+
+<video controls>
+  <source src="/media/endoftheset.mp4" type="video/mp4" />
+
+  Your browser does not support the video tag.
+</video>
