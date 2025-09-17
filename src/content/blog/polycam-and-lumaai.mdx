@@ -1,0 +1,66 @@
+---
+date: 2023-08-19T00:00:00.000Z
+title: ' Experiences with Polycam (and LumaAI) and AR'
+description: >
+  This past year I got a new phone, an iPhone 13 Pro specifically for the LiDAR
+  sensor, and especially to use one app: Polycam. Augmented Reality is an area
+  of computing that I have been interested in since learning about Google Glass
+  and ZeroUI, but have never been able to create it till now. 
+author: Edward Deaver
+categories:
+  - xr
+tags:
+  - polycam
+  - xr
+  - ar
+image: assets/blog/Screenshot+2023-08-06+at+7.16.25+PM.webp
+---
+
+This past year I got a new phone, an iPhone 13 Pro specifically for the LiDAR sensor, and especially to use one app: [Polycam](https://poly.cam/). Augmented Reality is an area of computing that I have been interested in since learning about Google Glass and ZeroUI, but have never been able to create it till now.
+
+Let’s first define Augmented Reality vs Virtual Reality:
+
+* AR - overlays computed elements overtop your reality (camera view).
+* VR - constructs a new digital world, like a video game.
+
+With Polycam we can scan objects using the LiDAR sensor to gain texture and depth data of an object to eventually create a mesh. The LIDAR sensor creates a point cloud that Polycam manipulates ([read more about the sensor data](https://medium.com/bluecadet/hello-lidar-world-7ac77fe2470d)).
+
+This app has completely changed how I look at my environment: from just passing by to taking the time to discover the little details.
+
+Here are a couple of my scans:
+
+## Polycam:
+
+This is a horse with a blue/red/white design by [StayFreshDesign](https://stayfresh.design/) in front of the [Syracuse MOST Museum](https://www.most.org/).
+
+<iframe src="https://poly.cam/capture/20540C97-2B4A-4282-8551-722F3F1677EF" title="polycam capture viewer" style="height:100%;width:100%;max-height:720px;max-width:1280px;min-height:280px;min-width:280px" frameborder="0" />
+
+This is a dinosaur sculpture I found on the side of the road by the MOST in Syracuse.
+
+<iframe src="https://poly.cam/capture/DF56B83E-B110-48AE-B11B-55E2239BF9BE" title="polycam capture viewer" style="height:100%;width:100%;max-height:720px;max-width:1280px;min-height:280px;min-width:280px" frameborder="0" />
+
+This is a pendant light on the outside of the State Tower building entrance (Syracuse, NY).
+
+<iframe src="https://poly.cam/capture/405D2007-5642-406B-81E8-B5646C1FAD5F" title="polycam capture viewer" style="height:100%;width:100%;max-height:720px;max-width:1280px;min-height:280px;min-width:280px" frameborder="0" />
+
+MIT Reality Hack 2023 Guitar we made:
+
+<iframe src="https://poly.cam/capture/7BE248ED-FBF6-4E37-9B62-B146F5D4D2DE" title="polycam capture viewer" style="height:100%;width:100%;max-height:720px;max-width:1280px;min-height:280px;min-width:280px" frameborder="0" />
+
+After writing the original version of this blog, many months later LumaAI came out. It doesn’t use the LiDAR tech but photos to create a Neural Radiance Field (NeRF).
+
+## LumaAI:
+
+<iframe src="https://lumalabs.ai/embed/ccaf9cfb-3967-48ee-9dc7-036780a206ac?mode=slf&background=%23ffffff&color=%23000000&showTitle=true&loadBg=true&logoPosition=bottom-left&infoPosition=bottom-right&cinematicVideo=undefined&showMenu=false" height="500" frameborder="0" title="luma embed" style="border: none; width:100%;" />
+
+This is a [hand sculpture in Downtown Syracuse NY](https://goo.gl/maps/pQ2ByDks8ks6wuK76). Capturing the hand with LumaAI was very quick compared to the LiDAR process with Polycam.
+
+This is an angel sculpture in the Syracuse School of Music:
+
+<iframe src="https://lumalabs.ai/embed/380a8436-d735-4c12-982e-e95cb1f4124d?mode=slf&background=%23ffffff&color=%23000000&showTitle=true&loadBg=true&logoPosition=bottom-left&infoPosition=bottom-right&cinematicVideo=undefined&showMenu=false" width="281" height="500" frameborder="0" title="luma embed" style="border: none; width: 100%;" />
+
+This is a scene of the stairs in that same school notice how the details degrade on the sides.
+
+<iframe src="https://lumalabs.ai/embed/b82350cf-5693-4435-9236-9542ed52b9f8?mode=slf&background=%23ffffff&color=%23000000&showTitle=true&loadBg=true&logoPosition=bottom-left&infoPosition=bottom-right&cinematicVideo=undefined&showMenu=false" width="889" height="500" frameborder="0" title="luma embed" style="border: none; width: 100%" />
+
+Using both of these tools taught me what to use for what application. LumaAI is great for stationary object scanning while Polycam is fantastic for large scenes.

@@ -1,0 +1,41 @@
+---
+date: 2023-08-06T00:00:00.000Z
+title: ' Exploring WebXR'
+description: >
+  Over the last few weeks I have been exploring the free and open source side of
+  WebAR (part of the WebXR specification) in order to make a business case for
+  it, and roll it into our strategy. Let’s explore what I’ve found and explain
+  some concepts along the way.
+author: Edward Deaver
+categories:
+  - webxr
+tags:
+  - xr
+image: assets/blog/webxrsupport.png
+---
+
+Over the last few weeks I have been exploring the free and open-source side of WebAR (part of the WebXR specification) in order to make a business case for it, and roll it into our strategy. Let’s explore what I’ve found and explain some concepts along the way.
+
+First, if you are interested in exploring Augmented Reality as a medium check out Polycam, I really like it ([see my blog post on it](https://worldmerge.io/post/polycam-and-ar/?ref=edwarddeaver.me)) (edit: I would also recommend checking out[ Luma AI](https://lumalabs.ai/) to see how [NeRFs ](https://www.matthewtancik.com/nerf)can be used).
+
+I’m going to be referring to a few acronyms throughout this post, let’s define them:
+
+1. AR - Augmented Reality - digital objects superimposed on your reality (camera) (think [PokemonGo](https://en.wikipedia.org/wiki/Pok%C3%A9mon_Go?ref=edwarddeaver.me))
+2. VR - Virtual Reality - virtual objects with a first person camera view that you control (video game like) ([Beat Saber](https://en.wikipedia.org/wiki/Beat_Saber?ref=edwarddeaver.me)).
+3. SLAM - Simultaneous localization and mapping - where are you in a map? See the [wiki for more details](https://en.wikipedia.org/wiki/Simultaneous_localization_and_mapping?ref=edwarddeaver.me). I don’t totally understand it yet.
+
+Now that we know the terms, let’s understand the state of support of WebXR (WebAR). WebXR is incredibly new, we are on the bleeding edge of browser technologies. The WebXR Device API spec W3C Candidate Recommendation Draft was just published on 24 August 2022. But even though it is so new there is device support in Chrome and Android. Apple is not in this supported list because they do not officially support WebXR spec in Safari (all browsers on iOS run Webkit the Safari render engine), and it is supported via a polyfill. The other way iOS supports AR is through the QuickLook application that can be launched and sent a model file ([see the Apple website for an example of this activity](https://developer.apple.com/augmented-reality/quick-look/?ref=edwarddeaver.me)) (learn more about their custom 3d model file type: [USDZ](https://developer.apple.com/documentation/arkit/usdz_schemas_for_ar?ref=edwarddeaver.me)).
+
+<AstroImage src="assets/blog/webxrsupport.png" alt="Everybody basically supports it except Safari and Firefox." caption="Everybody basically supports it except Safari and Firefox." width={1726} height={816} />
+
+I have worked with GeoSpatial data from 3dBuildings.com. This demo below is using data from 3dBuildings and ModelViewer.js.
+
+<iframe style="width:100%; height:30vh;" src="https://dev.edwarddeaver.me/visualizingSUDemo/" />
+
+I also worked with [8thWall](https://www.8thwall.com/) by Niantic. The pros of this platform are you can work with AR in a browser and they seem to have been able to successfully support iOS devices. It works well. The only downside is the pricing. Below is taking a default 8thWall project and changing the target image to a poster.
+
+<Vimeo id="852174365" />
+
+There is a free alternative to 8thWall, [MindARJS](https://github.com/hiukim/mind-ar-js). It has some of the same features as 8thWall but has some rough edges. The tracking is not as good as 8thWall is but it’s free.
+
+<Vimeo id="852175739" />
