@@ -1,0 +1,66 @@
+---
+date: 2023-04-01T00:00:00.000Z
+title: ' More Power - Strike That - More Directed Power'
+description: >-
+  The stepper motor isn't fast enough and I don't have the power/money budget to
+  push it there. My takeaway from this short journey into mechatronics is the
+  human body is truly an amazing creation.
+author: Edward Deaver
+categories:
+  - electromechanical
+tags:
+  - arduino
+  - electromechanical
+  - creative-technology
+image: assets/blog/pictureofthemotor.jpg
+---
+
+**In action shot of the motor / kick pedal hitting a pizza pan**
+
+Uh-oh the stepper motor isn't fast enough and I don't have the power/money budget to push it there (apparently things get fast at 90v). There must be a better way. My take away from this short journey into mechatronics is the human body is truly an amazing creation and no matter what I do, I won't beat it.
+
+## Why is speed an issue?
+
+The Beats Per Minute of a song or how fast a song actually is. For example Everlong by Foo Fighters is 156 BPM, which breaks down to ( if there was a hit every beat ) 1 hit every 156 beats / 60sec = 2.5 beats per second. So in one second each beat takes 1000 ms / 2.5 = 400ms per beat. If you were hitting a drum your down stroke would be 200ms and up stroke 200 ms.  
+
+## How fast can my stepper motor go?
+
+The speed test was setup with my motor attached to my Power Supply Unit at 30 volts and a limit of 5 amps (PSU rating). A side effect of running it at max power is heat, it gets hot (it's like touching a 150 watt incandescent bulb). I let it get up to speed and  using my iPhone slow-mo mode, 240 FPS recorded it.
+
+Once done and imported into DaVinci Resolve Free, which only supports 60 FPS timelines (it cuts the frames out instead of time stretching them to fit), and counted 90 frames to make a revolution or 1.5 seconds or 1500 milliseconds. This assumes an already up to speed motor and does not take into account acceleration and deceleration times.  
+
+<Vimeo id="804975210" />
+
+240 FPS recording of the stepper motor.
+
+After doing this I found this VLC plugin ([Time](https://addons.videolan.org/p/1154032?ref=edwarddeaver.me)) that can just display the time in milliseconds overtop the video so you don't need frame math and can handle high FPS video.
+
+## So now what?
+
+More searching: I found this this tutorial by [Adafruit: MIDI Solenoid Drum Kit](https://learn.adafruit.com/midi-solenoid-drum-kit/circuit-diagram?ref=edwarddeaver.me) and this wonderful tutorial on a fully robotic drum set by [Randofo](https://www.instructables.com/member/randofo/?ref=edwarddeaver.me) on [Instructables](https://www.instructables.com/Arduino-Controlled-Robotic-Drum/?ref=edwarddeaver.me). The latter tutorial turned me onto car door lock actuators. It turns out finding actuators with a long enough stroke gets pretty expensive and these are pretty affordable.
+
+Also, there are pneumatics that would do parts of the job well like speed and torque but are hampered by the noise of an air compressor. I guess you could mitigate that with sound proofing it or having lots of gas cylinders, but that doesn't seem very good for a public event.
+
+I picked up a couple Large push-pull solenoids and tested them. The solenoid is faster, a lot faster than the stepper motor. It can do a round trip in 100ms. Thank you to madbodger on the Adafruit Discord for helping me with the ULN2803 circuit.
+
+<AstroImage src="assets/blog/IMG_4199.webp" alt="  Circuit of ULN2803 on a bread board" width={1500} height={2000} caption="  Circuit of ULN2803 on a bread board" />
+
+The trade off for this speed is torque, pull isn't even close to what that stepper could do. These work in a way, if I wanted to use test drum pads like the tutorial it'd be fine but I want spectacle. I want things moving. To achieve that I need something that had a longer stroke length to pull my kick drum pedal and that's where the longer stroke car lock solenoids came in.
+
+So I drilled out the screw holding the pedal to the chain of the kick drum lever and zipped it down to a box to mount it all.
+
+At 60 FPS it's hard to measure the speed but it's about 140 ms for the down stroke and 100 ms for the up stroke. This is a pull solonoid only. So it doesn't have an integrated spring like the push - pulls do, so I tuned the pull strength of the pedal to bring it back quickly and not impede for down stroke.
+
+So here we are. A working solution.
+
+<Vimeo id="804973444" />
+
+Drum hitting pizza pan.
+
+But, the ULN2803 doesn't do well when sinking 5 amps into it, it can only take 500ma per channel so... relays it is.
+
+<Vimeo id="804952344" />
+
+I have parts on order to get MIDI working. I'm conflicted if I'll implement it and just go with CV instead.
+
+Till then, good night.

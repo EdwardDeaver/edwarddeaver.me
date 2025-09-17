@@ -1,0 +1,88 @@
+---
+date: 2023-05-01T00:00:00.000Z
+title: 'Making of MIDI Kickdrum / Maker Faire Experience '
+description: >-
+  I wanted a project that would combine a few interests of mine and make for a
+  cool exhibit at Maker Faire Syracuse. This was filled with firsts. First time
+  exhibiting at Maker Faire, first time making a MIDI Instrument, first time
+  making an electromechanical instrument first real MaxMSP patch.
+author: Edward Deaver
+categories:
+  - electromechanical
+tags:
+  - arduino
+  - sound
+image: assets/blog/drum (1).webp
+---
+
+I wanted a project that would combine a few interests of mine and make for a cool exhibit at Maker Faire Syracuse. This was filled with firsts. First time exhibiting at Maker Faire, first time making a MIDI Instrument, first time making an electromechanical instrument first real MaxMSP patch.
+
+<Vimeo id="815262283" />
+
+I started this project after watching hours of Sam's journey from the Look Mum No Computer YouTube channel about making an old church organ controllable with MIDI. It planted a seed in me to make an electromechanical thing, and then seeing his visitor counter video just sent me on a journey. My initial electro mechanical research is in this [blog](https://edwarddeaver.me/blog/initial-research-electromechanical-sound/) and work with [stepper motors here.](https://edwarddeaver.me/blog/more-power-more-directed-power/)
+
+<Vimeo id="791238719" />
+
+This is Null.Band's resonance tube.
+
+<YouTube id="8PwwRR8deHk" />
+
+This is Sam's journey with the organ.
+
+I started this a few months ago working on it off and on with the goal of having an interactive experience for [Syracuse Maker Faire](https://syracuse.makerfaire.com/?ref=edwarddeaver.me): "We call it the Greatest Show (& Tell) on Earth - a family-friendly showcase of invention, creativity, and resourcefulness.".
+
+This project stretched my knowledge, and I had to rely on help from the Adafruit, ElectroSmith and Max Discord communities.
+
+<AstroImage src="assets/blog/Screenshot 2025-09-16 at 10.21.49 PM.png" width={1180} height={430} alt="Adafruit Electrosmith and MAX MSP logo" />
+
+## Striking:
+
+After testing a variety of stepper motors and solenoids I found this [Instructable](https://www.instructables.com/Arduino-Controlled-Robotic-Drum/?ref=edwarddeaver.me) that recommended them. These have enough torque to pull a kick drum pedal but are not rated for continuous use so they get hot, and can start releasing some magic smoke. To alleviate this I reduced the spring tension on the kick drum pedal, so keep the amps down to 3 Amps drawn (every time it fired it drew 36 watts). The wood is from Home Depot, and the bolts in the actuator were replaced with longer ones from McMasterCar so they could be secured down.
+
+## MIDI/Max:
+
+<AstroImage src="assets/blog/Screenshot-2023-04-06-at-5.53.58-AM.png" alt="MAX MSP screenshot" width={1600} />
+
+Screenshot of the Max patch
+
+After getting my actuating motion working I moved on to MIDI. I got an [Arturia KeyStep ](https://www.arturia.com/keystep/overview?ref=edwarddeaver.me)MIDI controller so to have a source of truth for the MIDI signals.
+
+To route the MIDI signals I used [Cycling '74 Max](https://cycling74.com/products/max?ref=edwarddeaver.me). This was my first time really making a Max patch on my own that wasn't part of a tutorial. It's interesting and quirky especially if you come from a text-based programming background. It doesn't act like you would want sometimes, it is constrained but once you start to understand how it works the creation process gets easier as you purge your mind of comparing it to other languages. Overall, it just works. It was really easy to get started and whenever I had issues the community was amazing and helped me out. My Max program takes in MIDI and then splits it into 2 outputs. One checks if note 70 is pressed and then sends data to the Daisy Seed over USB MIDI, the other implements a delay to match the kick drum delay and has the Operating System make the keyboard notes. I can not express just how helpful the Max community is amazing and I want to thank Alex M, quail, BLAIR specifically.
+
+## Daisy:
+
+The [Electrosmith Daisy Seed](https://www.electro-smith.com/daisy/daisy?ref=edwarddeaver.me) is such a cool little board and company. I chose this after searching around for boards that could easily do MIDI, and just become enveloped in the community and its capabilities. This board can do it all and I've only scratched the surface of it. This time around I used their [libDaisy](https://github.com/electro-smith/libDaisy?ref=edwarddeaver.me) library for C++ and USB MIDI for data transfer. This was also my first time outside of the Arduino ecosystem. Their Discord is awesome, thank you specifically to Nick // Infrasonic Audio, angrydan, ifranco, Takumi\_Ogata, nii-nil and aidolon.
+
+A Daisy GPIO pin was connected to a relay board I had gotten from Sparkfun a while ago for a different project that didn't pan out. The relay turns on and off the 12v to the actuator. This relay itself could be a percussion instrument. It has such a loud click that paired with a piezo contact mic could be a cool little unit itself.
+
+## Maker Faire:
+
+The drum part of the drum machine was put together the night before Maker Faire. After getting lost in the technicals I forgot to make a thing to hold actually drum. So I got a canvas from an art store and put some hooks in the box.
+
+<AstroImage src="assets/blog/drum.jpg" alt="Drum" height={3024} />
+
+The arm to hold the canvas and hooks was done the night before.
+
+This was my first time presenting at Maker Faire and it was incredible! I got to see some friends from Rochester Maker Faire: @[lamemakes](https://www.instagram.com/lamemakes/?ref=edwarddeaver.me) (we were booth neighbors!), @[null.band](https://null.band/?ref=edwarddeaver.me) (the same guy from the inspiration blogs for this project), [Forge Gone Conclusions](https://edwarddeaver.me/blog/making-of-midi-kickdrum-maker-faire/fgconclusions.com). And I made new ones!  
+
+I didn't know what to expect so I made some posters to explain what I did, with a similar ethos to my [capstone posters](https://edwarddeaver.me/portfolio/computer-science-bachelors-capstone/). This was a good move as I got a few compliments on my booth design.
+
+<AstroImage src="assets/blog/booth.jpg" alt="  My booth at Syracuse Maker Faire. " height={3024} caption="  My booth at Syracuse Maker Faire. " />
+
+It was great to be able to talk about the local arts scene here like The Little Room (RIP), The Noise Source (RIP), Wunder Bar (RIP). 
+
+I met a guy who knew what Max was which was mind-blowing. He had been teaching his daughter music through [PureData](https://puredata.info/?ref=edwarddeaver.me), which was just so cool! And it was nice to talk to another person about DIY synths and the Daisy Seed.
+
+<YouTube id="1o5Wasmd8yU" />
+
+Intro to PureData. 
+
+Note on children interacting with it: First, I didn't expect it would be as popular as it was with kids. Second, a lot can play the piano and some asked me actual music theory questions that I couldn't answer so I'll have to study up. I think children are a very good measure of UX and interactivity interest. It's a pretty clear-cut question for them, "Interesting? Yes/No".
+
+Snother note, have a friend with you or make some there who can cover your booth. Thank you to my parents and a friend who came out and LameMakes for covering my booth. Also, drink a lot of water; talking for 8 hours straight takes a toll on your vocal cords. And see other booths! I didn't take the time to check out all the ones I wanted to, there was a robot drawing pictures I didn't see, it reminded me of this project by [DeepLocal](https://www.deeplocal.com/natgeo-einsteins-chalkboard?ref=edwarddeaver.me) and [VTProDesign](https://vtprodesign.com/work/painted-by-everyone?ref=edwarddeaver.me).
+
+I can't wait to go back next year.
+
+Best,
+
+Edward
