@@ -1,0 +1,64 @@
+---
+date: 2023-10-23T00:00:00.000Z
+title: ' Control My Lights: A Retrospective'
+description: >-
+  Almost 3 years ago now I made Control My Lights a light installation in my
+  room. It was live-streamed to Twitch and YouTube, and you could control them
+  via a website, Twitch chat, and YouTube chat. It was made a time of peak
+  Covid, rocketing to the bottom mental health, and deep unemployment. So I made
+  something to get some eyes. 
+author: Edward Deaver
+categories:
+  - retrospective
+tags:
+  - controlmylights
+image: assets/blog/Screenshot+2023-10-29+at+3.37.46 PM.webp
+---
+
+Almost 3 years ago now I made [Control My Lights](https://edwarddeaver.me/portfolio/control-my-lights) a light installation in my room. It was live-streamed to Twitch and YouTube, and you could control them via a website, Twitch chat, and YouTube chat. It was made a time of peak Covid, rocketing to the bottom mental health, and deep unemployment. So I made something to get some eyes. 
+
+Looking back on it there is a lot I would have done differently. 
+
+#### Let’s take stock of exactly what it did:
+
+*     I made analog light tubes that were controlled via an Arduino.
+*     Using a website (React app hosted on Heroku) a user could choose the color of the light tubes. 
+*     Using Twitch chat a user could choose the color of the light tubes.
+*     Using YouTube chat a user could choose the color of the light tubes. 
+*     Using OBS the video feed was streamed to Twitch. 
+*     Using OBS the video feed was streamed to YouTube. 
+*     A program overlayed animations to the video feed when a command was received. 
+*     Had a link to donate money to a charity. 
+*     I’m probably forgetting something. 
+
+This was too much. 
+
+#### How could it be better:
+
+1. **Keep it simple. **    
+2. Focus on the experience to drive engagement. 
+   * Does it interest you?
+   * Gamify the experience and focus on making it more interesting than just lights.
+     * Could that data be live ranking scores of the most used colors?
+     * Could there be a goal and using the chaotic element of random users putting it at risk? See Reddit’s The Button.
+3. The tech stuff doesn’t matter that much. 
+   * Like I said in the top part, focus on the idea first and work through that. Journey map how you would interact with it, and keep it simple. 
+   * While yes, the technology choices you make will directly affect how the program works it should not change the above disered mode of interactions and story. If that is the case, switch or learn your tool better. 
+     * Say you made an application that should be able to handle multiple user interactions at once; not knowing about NodeJS’s event loop/promises would be an issue. You should learn that (a callback to when I made this out of NodeJS). Knowing what I know now, I would not choose NodeJS and maybe something that natively supports multithreading, but at the moment it worked. 
+     * Choose something that will get you the result as quickly as possible. This was a one-off project and not an app that’s shipped to multiple devices, so from that perspective it’s a unique situation for applications. If you think you’ll want to / need to redeploy in the future also factor maintainability into this. 
+       * Ask: What do I know the best?
+       * Ask: How does that language mesh with my idea? For example, Assembly will probably not be good for a low turnaround time interactive website. 
+4. Project management: 
+   * Ask: What are the technical requirements of my idea? 
+     * Follow up each point with “Does your chosen language fit those requirements?”. 
+   * Draw a flow chart of the idea, maybe even a UML diagram, and user stories.
+   * Make everything as simple as possible, and pace yourself. 
+   * Keep the end result simple. Really. Take stock of your idea, the user stories, and find the core elements and make everything extra. Example: Have one core mode of interaction (not 3 like mine). 
+5. If you have parts of the project you don’t know, reach out to your network. 
+   * **You can’t know everything, so reach out to people. **
+6. Finally, Don’t Do Resume Driven Development. 
+   * This project was born of desperation to get a job. As I write this I have a job, I don’t believe it’s related but maybe it was. RDD - Resume Driven Development will move you to focus on new technologies, that while fancy and on the front page of HackerNews, might not have the best documentation or are in beta. 
+
+In short: focus on the human experience, and less on the tech. 
+
+Maybe I’ll make another interactive thing solo-ish someday. It takes a lot of time and right now I’m not sure what I’d do. 

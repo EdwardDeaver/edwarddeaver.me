@@ -33,5 +33,7 @@ export default new Map([
 ["src/content/pages/archive.mdx", () => import("astro:content-layer-deferred-module?astro%3Acontent-layer-deferred-module=&fileName=src%2Fcontent%2Fpages%2Farchive.mdx&astroContentModuleFlag=true")],
 ["src/content/portfolio/syracuse-snow-plow-mapping.mdx", () => import("astro:content-layer-deferred-module?astro%3Acontent-layer-deferred-module=&fileName=src%2Fcontent%2Fportfolio%2Fsyracuse-snow-plow-mapping.mdx&astroContentModuleFlag=true")],
 ["src/content/blog/exploring-webxr.mdx", () => import("astro:content-layer-deferred-module?astro%3Acontent-layer-deferred-module=&fileName=src%2Fcontent%2Fblog%2Fexploring-webxr.mdx&astroContentModuleFlag=true")],
-["src/content/blog/polycam-and-lumaai.mdx", () => import("astro:content-layer-deferred-module?astro%3Acontent-layer-deferred-module=&fileName=src%2Fcontent%2Fblog%2Fpolycam-and-lumaai.mdx&astroContentModuleFlag=true")]]);
+["src/content/blog/polycam-and-lumaai.mdx", () => import("astro:content-layer-deferred-module?astro%3Acontent-layer-deferred-module=&fileName=src%2Fcontent%2Fblog%2Fpolycam-and-lumaai.mdx&astroContentModuleFlag=true")],
+["src/content/blog/visiting-hush-studios-brooklyn-navy-yard.mdx", () => import("astro:content-layer-deferred-module?astro%3Acontent-layer-deferred-module=&fileName=src%2Fcontent%2Fblog%2Fvisiting-hush-studios-brooklyn-navy-yard.mdx&astroContentModuleFlag=true")],
+["src/content/blog/control-my-lights-a-retrospective.mdx", () => import("astro:content-layer-deferred-module?astro%3Acontent-layer-deferred-module=&fileName=src%2Fcontent%2Fblog%2Fcontrol-my-lights-a-retrospective.mdx&astroContentModuleFlag=true")]]);
 		
